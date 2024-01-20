@@ -1,0 +1,38 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Django Tailwind</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+	</head>
+
+	<body class="bg-gray-100 font-serif leading-normal tracking-normal">
+		<!-- Navbar -->
+		<nav class="bg-blue-500 p-4 text-white fixed top-0 w-full z-10">
+			<div class="container mx-auto flex justify-between items-center">
+				<!-- Logo or App Name -->
+				<span class="text-xl font-semibold">StreetVigil</span>
+		
+				<!-- User Authentication -->
+				<div class="flex items-center space-x-4">
+					{% if user.is_authenticated %}
+						<!-- Display username and logout button -->
+						<span class="text-sm">Welcome, {{ user.username }}</span>
+						<form action="{% url 'logout' %}" method="post">
+							{% csrf_token %}
+							<button type="submit" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">Logout</button>
+						</form>
+					{% else %}
+						<!-- Display login and register buttons -->
+						<a href="{% url 'login' %}" class="text-sm bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md">Login</a>
+						<a href="{% url 'register' %}" class="text-sm bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">Register</a>
+					{% endif %}
+				</div>
+			</div>
+		</nav>
+		{% block body %} {% endblock %}
+	</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %} 
+
+{% block body %}
+    <!-- Content -->
+    <div class="container mx-auto mt-16 p-4">
+        {% if user.is_authenticated %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Card - Past Reports -->
+                <div class="bg-white p-4 rounded-md shadow-md">
+                    <h2 class="text-lg font-semibold mb-4">Total Reports</h2>
+                    <h2>Total Reports: {{ total_reports }}</h2>
+                </div>
+
+                <!-- Card - Statistics -->
+                <div class="bg-white p-4 rounded-md shadow-md">
+                    <h2 class="text-lg font-semibold mb-4">Statistics</h2>
+                    <h2>Total Points: {{ total_points }}</h2>
+                </div>
+
+            </div>
+        {% else %}
+            <p>Login To View your data</p>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-500 p-4 text-white fixed bottom-0 w-full z-10">
+        <div class="container mx-auto flex justify-center">
+            <!-- Upload Button -->
+            <a href="{% url 'upload' %}">
+                <button class="bg-green-500 text-white py-2 px-6 rounded-md mx-2">Upload</button>
+            </a>
+            <!-- Capture Button -->
+            <a href="{% url 'capture' %}">
+                <button class="bg-blue-500 text-white py-2 px-6 rounded-md mx-2">Capture</button>
+            </a>
+        </div>
+    </footer>
+
+{% endblock %}

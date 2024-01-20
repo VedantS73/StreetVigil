@@ -1,0 +1,172 @@
+<!-- capture_image.html -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Capture Image</title>
+</head>
+
+<body onload="captureImage()">
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- <input type="file" name="image" accept="image/*" /> -->
+        <div class=" flex  flex-row justify-center   items-center "> 
+            <button type="button" onclick="clickPhotos()"  style="display: block;">Capture</button>
+        </div>
+        
+        <img id="capturedImage" style="display: none;" />
+        <!-- <button type="button" onclick="retakePhoto()" style="display: none;">Retake Photo</button> -->
+
+
+        <!-- this div should be visible only when a photo is clicked -->
+
+        <div class="flex flex-row justify-center items-center"  >
+            <button type="button" onclick="retakePhoto()">Retake</button>
+            <button>Proceed</button>
+        </div>
+        <div class="hiddenDiv"  style="display :  none">
+            
+
+
+            <div>
+                <select name="category">
+                    <option value="">Select a category</option>
+                    <option value="CR">Crime</option>
+                    <option value="AC">Accident</option>
+                    <option value="SA">Suspicious Activity</option>
+                    <option value="LF">Lost and Found</option>
+                    <option value="OT">Other</option>
+                </select>
+            </div> 
+            
+
+            <button type="button" class="submitbtn" onclick="submitForm()">Submit</button>
+
+    
+            </div>
+       
+
+        
+    </form>
+
+    
+
+    <script>
+        let video;
+        let imageDataUrl;
+
+        function captureImage() {
+            if (!video) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then((stream) => {
+                        video = document.createElement('video');
+                        video.srcObject = stream;
+                        // document.body.appendChild(video);
+                        document.body.insertBefore(video, document.body.firstChild);  
+                        // code for taking the 90% width and  of the screen
+                        video.style.width = '100vw';
+                        video.style.height = '60vh';
+                        video.style.objectFit = 'cover';
+                      
+
+                        // Optional: Show the video element
+                        video.play();
+                    })
+                    .catch((error) => {
+                        console.error('Error accessing camera:', error);
+                    });
+            }
+        }
+
+        function clickPhotos() {
+            console.log('Click photos');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.clientWidth; // Use clientWidth to get the rendered width
+            canvas.height = video.clientHeight; // Use clientHeight to get the rendered height
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Stop the video stream
+            stopVideo();
+
+            imageDataUrl = canvas.toDataURL('image/png');
+
+            const capturedImageElement = document.getElementById('capturedImage');
+            capturedImageElement.src = imageDataUrl;
+            capturedImageElement.style.display = 'block';
+
+            // Display the "Retake Photo" button
+            document.querySelector('button[onclick="retakePhoto()"]').style.display = 'block';
+        }
+
+        function stopVideo() {
+            if (video && video.srcObject) {
+                const tracks = video.srcObject.getTracks();
+
+                tracks.forEach(track => {
+                    track.stop();
+                });
+
+                video.srcObject = null;
+                document.body.removeChild(video);
+                video = null;
+            }
+        }
+
+        function retakePhoto() {
+            // Hide the captured image
+            document.getElementById('capturedImage').style.display = 'none';
+
+            // Start capturing image again
+            captureImage();
+
+            // Hide the "Retake Photo" button
+            document.querySelector('button[onclick="retakePhoto()"]').style.display = 'none';
+        }
+
+        function submitForm() {
+            if (imageDataUrl) {
+                // Create a FormData object and append the CSRF token
+                const formData = new FormData();
+                const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+                formData.append('csrfmiddlewaretoken', csrfToken);
+
+                // Convert the data URL to a Blob and append to FormData
+                const blob = dataURItoBlob(imageDataUrl);
+                formData.append('image', blob, 'captured_image.png');
+
+                // Use the fetch API to send the FormData to the server
+                fetch('/streetvigil/capture', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())  // Assuming your server returns JSON
+                    .then(data => {
+                        console.log('Image saved successfully:', data);
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;  // Redirect to the success page
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving image:', error);
+                    });
+            } else {
+                console.error('No image to submit');
+            }
+        }
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: 'image/png' });
+        }
+    </script>
+</body>
+
+</html>

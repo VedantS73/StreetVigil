@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8">
+    <!-- Map Section (Top 50%) -->
+    <div id="map" class="w-full h-screen/2 mb-4" style="height: 50vh; width: 100%; background: grey; overflow: hidden; margin-top: 70px;">{{ map|safe }}</div>
+
+    <!-- Details Section (Below 50%) -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-4">Location Details</h2>
+      <p>Latitude: {{ latitude }}, Longitude: {{ longitude }}</p>
+      <p>Additional Data: {{ other_data }}</p>
+    </div>
+  </div>
+  <script>
+    var crimeData = {{ crime_data|safe }};
+    
+    // Iterate over the crimeData and add markers to the map
+    crimeData.forEach(function (crime) {
+        var marker = L.marker([crime.latitude, crime.longitude]).addTo(my_map);
+        marker.bindPopup('Category: ' + crime.category + '<br>Description: ' + crime.description);
+    });
+</script>
+{% endblock %}

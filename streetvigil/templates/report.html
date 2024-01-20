@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8">
+    <h2 class="text-2xl font-semibold mb-4">Report Image</h2>
+    <form method="post" action="{% url 'report' %}" class="mb-4">
+      {% csrf_token %}
+      <!-- You may customize this part based on your CapturedImage model fields -->
+      <img src="{{ instance.image.url }}" alt="Captured Image" class="mb-4" />
+      <!-- Add fields for category, description, etc. -->
+      <label for="id_category">Category:</label>
+      {{ form.category }}
+      
+      <label for="id_description">Description:</label>
+      {{ form.description }}
+      
+      <!-- Add more fields as needed -->
+
+      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Submit Report</button>
+    </form>
+  </div>
+{% endblock %}

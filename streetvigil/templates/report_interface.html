@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8">
+    <h2 class="text-2xl font-semibold mb-4">Report Interface</h2>
+
+    <!-- Display the captured image -->
+    <img src="{{ form.instance.image.url }}" alt="Captured Image" class="max-w-full mb-4">
+
+    <!-- Report Form -->
+    <form method="post" action="{% url 'submit_report' %}" class="mb-4">
+      {% csrf_token %}
+      
+      {% comment %} {{ form.image }} {% endcomment %}
+      
+      <!-- Dropdown for category -->
+      <div class="mb-4">
+        <label for="id_category" class="block text-sm font-medium text-gray-700">Category</label>
+        <div class="mt-1">
+          <select id="id_category" name="category" class="form-select block w-full">
+            <option value="CR">Crime</option>
+            <option value="AC">Accident</option>
+            <option value="SA">Suspicious Activity</option>
+            <option value="LF">Lost and Found</option>
+            <option value="OT">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Description field -->
+      <div class="mb-4">
+        <label for="id_description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="id_description" name="description" class="form-textarea block w-full" rows="3"></textarea>
+      </div>
+      
+      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Submit Report</button>
+    </form>
+  </div>
+{% endblock %}

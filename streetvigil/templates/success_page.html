@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8 text-center">
+    <h2 class="text-2xl font-semibold mb-4">Report Submitted Successfully!</h2>
+    <p>Your report has been successfully submitted. You will be redirected to the homepage in <span id="countdown">5</span> seconds.</p>
+  </div>
+
+  <script>
+    // Countdown function
+    function countdown() {
+      var seconds = 5;
+      var countdownElement = document.getElementById('countdown');
+
+      function updateCountdown() {
+        countdownElement.textContent = seconds;
+      }
+
+      function redirectHome() {
+        window.location.href = '/streetvigil/';
+      }
+
+      // Initial update
+      updateCountdown();
+
+      // Countdown logic
+      var countdownInterval = setInterval(function () {
+        seconds--;
+
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          redirectHome();
+        } else {
+          updateCountdown();
+        }
+      }, 1000);
+    }
+
+    // Start the countdown when the page loads
+    window.onload = function () {
+      countdown();
+    };
+  </script>
+{% endblock %}
