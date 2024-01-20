@@ -13,7 +13,7 @@
 
         <!-- Crime Content on the right -->
         <div>
-          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.get_category_display }}</p>
+          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
           <p class="text-gray-700">{{ crime_event.description }}</p>
           <div class="mt-4">
             <span class="text-sm text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>

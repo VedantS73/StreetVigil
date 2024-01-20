@@ -1,28 +1,25 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="container mx-auto my-8">
-    <h2 class="text-2xl font-semibold mb-4">Report Interface</h2>
+<section class="flex flex-col overflow-hidden justify-center md:flex-row h-screen items-center">
 
-    <!-- Display the captured image -->
-    <img src="{{ form.instance.image.url }}" alt="Captured Image" class="max-w-full mb-4">
-
+  <div class="md:block w-full md:w-1/2  md:h-screen">
+      <img src="{{ form.instance.image.url }}" alt="" class="w-full h-64 ">
+    </div>
     <!-- Report Form -->
-    <form method="post" action="{% url 'submit_report' %}" class="mb-4">
+    <form method="post" action="{% url 'submit_report' %}" class="mb-4 w-1/2 px-10 mx-auto">
       {% csrf_token %}
-      
-      {% comment %} {{ form.image }} {% endcomment %}
-      
+
       <!-- Dropdown for category -->
-      <div class="mb-4">
+      <div class="mb-4 w-full">
         <label for="id_category" class="block text-sm font-medium text-gray-700">Category</label>
         <div class="mt-1">
-          <select id="id_category" name="category" class="form-select block w-full">
-            <option value="CR">Crime</option>
-            <option value="AC">Accident</option>
-            <option value="SA">Suspicious Activity</option>
-            <option value="LF">Lost and Found</option>
-            <option value="OT">Other</option>
+          <select id="id_category" name="category" class="form-select block ">
+            <option value="Crime">Crime</option>
+            <option value="Accident">Accident</option>
+            <option value="Suspicious Activity">Suspicious Activity</option>
+            <option value="Lost and Found">Lost and Found</option>
+            <option value="Other">Other</option>
           </select>
         </div>
       </div>
@@ -32,8 +29,44 @@
         <label for="id_description" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea id="id_description" name="description" class="form-textarea block w-full" rows="3"></textarea>
       </div>
-      
-      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Submit Report</button>
+
+      <!-- Latitude field -->
+      <div class="mb-4">
+        <label for="id_latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+        <input type="text" id="id_latitude" name="latitude" class="form-input block w-full" readonly>
+      </div>
+
+      <!-- Longitude field -->
+      <div class="mb-4">
+        <label for="id_longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+        <input type="text" id="id_longitude" name="longitude" class="form-input block w-full" readonly>
+      </div>
+
+      <!-- Fetch Location button -->
+      <button type="button" onclick="fetchLocation()" class="bg-green-500 text-white py-2 px-4 rounded-md">Fetch Location</button>
+
+      <!-- Submit Report button -->
+      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md mt-4">Submit Report</button>
     </form>
   </div>
+
+  <script>
+    // Function to fetch user's geolocation
+    function fetchLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            // Populate latitude and longitude fields
+            document.getElementById("id_latitude").value = position.coords.latitude;
+            document.getElementById("id_longitude").value = position.coords.longitude;
+          },
+          function (error) {
+            console.error("Error getting geolocation:", error.message);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
 {% endblock %}

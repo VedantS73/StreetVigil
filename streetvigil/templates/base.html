@@ -31,9 +31,9 @@
 				<div class="flex justify-center items-center space-x-4">
 					{% if user.is_authenticated %}
 						<!-- Display username and logout button -->
-						<div>
+						<div class="flex gap-5">
 
-							<span class="text-sm">Welcome, {{ user.username }}</span>
+							<span class=" text-black text-sm">Welcome, {{ user.username }}!</span>
 							<form action="{% url 'logout' %}" method="post">
 								{% csrf_token %}
 								<button type="submit" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md font-Inter">Logout</button>

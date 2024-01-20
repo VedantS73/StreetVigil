@@ -22,10 +22,10 @@
         <!-- this div should be visible only when a photo is clicked -->
         <div class="flex flex-row justify-center items-center" id="photoButtons" style="display: none;">
             <button type="button" onclick="retakePhoto()">Retake</button>
-            <button class="proceed" type="button"  onclick="hide()">Proceed</button>
+            <button class="proceed" type="button"  onclick="submitForm()">Proceed</button>
         </div>
         
-        <div class="hiddenDiv"  >
+        <!-- <div class="hiddenDiv"  style="display: none;">
             <div>
                 <select name="category" >
                     <option value="Crime">Crime</option>
@@ -61,7 +61,7 @@
             </div>
 
             <button type="button" class="submitbtn" onclick="submitForm()">Submit</button>
-        </div>
+        </div> -->
     </form>
 
     <script>
@@ -174,7 +174,7 @@
                     .then(data => {
                         console.log('Image saved successfully:', data);
                         if (data.redirect_url) {
-                            // window.location.href = data.redirect_url;  // Redirect to the success page
+                            window.location.href = data.redirect_url;  // Redirect to the success page
                         }
                     })
                     .catch(error => {

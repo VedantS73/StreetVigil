@@ -1,16 +1,16 @@
-import json
 from django.http import HttpResponse, HttpResponseRedirect , JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-import folium
 from folium import plugins
 from django.db.models import Q
 from .forms import CapturedImageForm
 from .models import *
 from .models import CapturedImage
-import json
+import json, requests, cv2, folium
+import numpy as np
 
 def index(request):
     context = {}
@@ -22,14 +22,13 @@ def index(request):
         context = {
             'total_reports': total_reports,
             'total_points': total_points,
-            'user_reports': user_reports,  # If you want to display user's reports in the template
+            'user_reports': user_reports,
         }
     return render(request, 'index.html', context)
 
 def login_view(request):
     if request.method == "POST":
 
-        # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
@@ -53,8 +52,6 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        # firstname = request.POST["firstname"]
-        # lastname = request.POST["lastname"]
         username = request.POST["username"]
         email = request.POST["email"]
 
@@ -66,9 +63,7 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
         try:
-            # user = User.objects.create_user(email, firstname, lastname)
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
@@ -80,35 +75,17 @@ def register(request):
     else:
         return render(request, "register.html")
 
-# def capture_image(request):
-#     if request.method == 'POST':
-#         form = CapturedImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             instance = form.save()
-#             return JsonResponse({'message': 'Image saved successfully', 'image_url': instance.image.url})
-#         else:
-#             return JsonResponse({'error': 'Form errors', 'errors': form.errors})
-#     else:
-#         form = CapturedImageForm()
-
-#     return render(request, 'capture_image.html', {'form': form})
-
 def capture(request):
     if request.method == 'POST':
+        print('POST request data:', request.POST)
+
         form = CapturedImageForm(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
-            category = request.POST['category']
-            lat =  request.POST['latitude']
-            lon = request.POST['longitude']
 
-            instance.category = category
-            instance.latitude = lat 
-            instance.longitude = lon
-            print(category , lat , lon)
             instance.save()
-
-            return JsonResponse({'message': 'Image saved successfully', 'image_url': instance.image.url})
+            # return render(request , 'aftercapture.html', {'form' : form})
+            return JsonResponse({'message': 'Image saved successfully', 'redirect_url': '/streetvigil/aftercapture'})
         else:
             return JsonResponse({'error': 'Form errors', 'errors': form.errors})
     else:
@@ -116,48 +93,30 @@ def capture(request):
 
     return render(request, 'capture.html', {'form': form})
 
+from django.shortcuts import render, redirect
 
+def aftercapture(request):
+    if request.method == 'POST':
+        # Get the latest CapturedImage instance
+        last_obj = CapturedImage.objects.latest('created_at')
 
+        # Update fields based on the form data
+        last_obj.category = request.POST.get('category')
+        last_obj.description = request.POST.get('description')
+        last_obj.reported_by =request.user
+        last_obj.latitude = request.POST.get('latitude')
+        last_obj.longitude = request.POST.get('longitude')
 
+        # Save the changes
+        last_obj.save()
 
-# def capture(request):
-#     if request.method == 'POST':
-#         # Handle the image file separately from the form
-#         image_form = CapturedImageForm(request.POST, request.FILES)
-        
-#         # Check if the image form is valid
-#         if image_form.is_valid():
-#             # Save the image form to get the instance
-#             image_instance = image_form.save(commit=False)
+        # Redirect to a success page or render a response as needed
+        return redirect('success_page')  # Replace 'success_page' with the actual URL or view name
 
-#             # Now handle the additional fields
-#             category = request.POST.get('category')
-#             description = request.POST.get('description')
-#             reported_by = request.POST.get('reported_by')
-#             location = request.POST.get('location')
-
-#             # Assign the additional fields to the image instance
-#             image_instance.category = category
-#             image_instance.description = description
-#             image_instance.reported_by = reported_by
-#             image_instance.location = location
-
-#             # Save the image instance with the additional fields
-#             image_instance.save()
-
-#             # Return a JsonResponse with success message and image URL
-#             return JsonResponse({'message': 'Image and data saved successfully', 'image_url': image_instance.image.url})
-#         else:
-#             # Return a JsonResponse with form errors if the image form is not valid
-#             return JsonResponse({'error': 'Form errors', 'errors': image_form.errors})
-#     else:
-#         # Create a new instance of the image form for rendering the initial form
-#         image_form = CapturedImageForm()
-
-#     # Render the form in case of a GET request or form validation errors
-#     return render(request, 'capture.html', {'image_form': image_form})
-
-
+    else:
+        # If it's not a POST request, render the initial aftercapture.html template
+        last_obj = CapturedImage.objects.latest('created_at')
+        return render(request, 'aftercapture.html', {'image_url': last_obj.image.url})
 
 def upload(request):
     if request.method == 'POST':
@@ -194,18 +153,23 @@ def report_submission_view(request):
     if request.method == 'POST':
         category = request.POST.get('category')
         description = request.POST.get('description')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
 
         new_instance = CapturedImage.objects.create(
             image=instance.image,
             category=category,
             description=description,
             reported_by=request.user,
-            latitude=instance.latitude,
-            longitude=instance.longitude,
+            latitude=latitude,
+            longitude=longitude,
             verified=False,
             rewards=0,
             created_at=timezone.now()
         )
+
+        # delete previous instance here
+        
 
         del request.session['captured_image_instance']
 
@@ -263,36 +227,55 @@ def crime_report(request, crime_id):
 
     return render(request, 'police_dashboard/crime_report.html', context)
 
-# def police(request):
-#     latitude = 17.60004477572919
-#     longitude = 78.41767026216672
+@csrf_exempt
+def fetch_number_plate_data(request, crime_id):
+    crime_event = get_object_or_404(CapturedImage, id=crime_id)
 
-#     my_map = folium.Map(location=[latitude, longitude], zoom_start=13)
+    # Assuming you have the image loaded into the 'image' variable using OpenCV
+    image = cv2.imread(crime_event.image.path)
 
-#     # Add a marker for the initial location
-#     user_icon = folium.Icon(color='blue', icon='user', prefix='fa')
-#     folium.Marker([latitude, longitude], popup='Your Location', icon=user_icon).add_to(my_map)
+    # Encode the image as JPEG
+    success, image_jpg = cv2.imencode('.jpg', image)
+    if not success:
+        return JsonResponse({'error': 'Error encoding image'})
 
-#     crime_data_objects = CapturedImage.objects.filter(verified=False)
+    # Convert the image data to bytes
+    image_bytes = image_jpg.tobytes()
 
-#     crime_data = [
-#         {'latitude': 17.592192076250978, 'longitude': 78.408226580168, 'category': 'Theft', 'description': 'Stolen item'},
-#         {'latitude': 17.601, 'longitude': 78.42, 'category': 'Accident', 'description': 'Car accident'},
-#         # Add more crime data as needed,
-#     ]
+    # Set the Plate Recognizer API endpoint and token
+    api_url = 'https://api.platerecognizer.com/v1/plate-reader/'
+    api_token = '1b176e989995c152ad27759e1fbc097ca4ac77f1'  # Replace with your actual API token
 
-#     # Iterate over crime data and add markers to the map with the correct icon
-#     for crime_point in crime_data_objects:
-#         icon = folium.Icon(color='red', icon='circle', prefix='fa')
-#         folium.Marker([crime_point.latitude, crime_point.longitude], 
-#                     popup=f"Category: {crime_point.get_category_display()}, Description: {crime_point.description}",
-#                     icon=icon).add_to(my_map)
-#     context = {
-#         'map': my_map._repr_html_(),
-#         'latitude': latitude,
-#         'longitude': longitude,
-#         'other_data': 'Your additional data',
-#     }
+    # Set the headers with the Authorization token
+    headers = {'Authorization': f'Token {api_token}'}
 
-#     return render(request, 'police_dashboard/police.html', context)
+    # Create a dictionary with the file data
+    files = {'upload': ('image.jpg', image_bytes, 'image/jpeg')}
 
+    # Send the POST request to the Plate Recognizer API
+    response = requests.post(api_url, headers=headers, files=files)
+
+    # Check the response
+    if response.status_code == 201 or response.status_code == 200:
+        # Successful response
+        results = response.json()["results"]
+
+        # return JsonResponse({'results': results})
+
+        # Extract information from the results
+        if results:
+            # Sort candidates based on score in descending order
+            candidates = sorted(results[0]["candidates"], key=lambda x: x["score"], reverse=True)
+
+            # Extract the number on the plate with the highest score
+            highest_score_plate = candidates[0]["plate"]
+
+            # Extract the vehicle type
+            vehicle_type = results[0]["vehicle"]["type"]
+
+            return JsonResponse({'plate': highest_score_plate, 'vehicle_type': vehicle_type})
+        else:
+            return JsonResponse({'error': 'No results found'})
+    else:
+        # Error handling
+        return JsonResponse({'error': f'Error: {response.status_code}', 'response_content': response.text})

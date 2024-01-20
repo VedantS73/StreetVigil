@@ -1,28 +1,113 @@
+<!-- police_dashboard/crime_report.html -->
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="container mx-auto my-8">
+  <div class="  h-screen mx-auto my-8">
     <h2 class="text-3xl font-semibold mb-6">Complete Crime Report</h2>
 
-    <div class="flex bg-white p-6 rounded-md shadow-md">
+    <div class="flex flex-auto  max-md:flex-col bg-white p-6 rounded-md shadow-md">
       <!-- Image on the left with a larger height and width -->
-      <img src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md w-48 mr-4">
-
+      <div class="w-1/2">
+      <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto">
+    </div>
       <!-- Other data on the right with 60% width -->
-      <div class="w-60">
+      <div class=" pl-4 ml-4 -translate-x-5 " style="" >
         <!-- Include Folium map HTML at the top -->
-        <div id="crime-map" style="height: 300px; width: 100%;">{{ crime_map_html|safe }}</div>
-
+        <div class="w-3/5" id="crime-map" >{{ crime_map_html|safe }}</div>
+        
         <!-- Details below the map -->
         <div class="mt-4">
-          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.get_category_display }}</p>
+          <div class="flex items-center justify-between w-full"><p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
+          <span class="text-sm flex justify-end text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span></div>
           <p class="text-gray-700">{{ crime_event.description }}</p>
           <div class="mt-4">
-            <span class="text-sm text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
             <!-- Add more details as needed -->
+          </div>
+          
+          <!-- Display the result -->
+          <div id="resultContainer" class="mt-4 w-full flex flex-col justify-center">
+            <!-- Check if the response status is okay -->
+            <p id="numberPlateResult"></p>
+            <p id="vehicleTypeResult"></p>
+
+            <!-- Additional information section (initially hidden) -->
+            <div id="additionalInfoSection" class="hidden mt-6">
+              <p>The crime committed is "<span id="crimeDescription"></span>" and the fine is Rs <span id="fineAmount"></span>.</p>
+              
+              <!-- HTML table with categories and fines -->
+              <table class="mt-4 p-4">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Fine (Rs)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Add rows for each category and fine -->
+                  <tr>
+                    <td>Category 1</td>
+                    <td>1000</td>
+                  </tr>
+                  <tr>
+                    <td>Category 2</td>
+                    <td>2000</td>
+                  </tr>
+                  <!-- Add more rows as needed -->
+                </tbody>
+              </table>
+
+              <!-- Number input fields for fine -->
+             <div> <input type="number" id="prefilledFine" class="mt-4" readonly>
+              
+              <!-- Number input fields for user input -->
+              <input type="number" id="userFineInput" class="mt-4" placeholder="Enter Fine Amount">
+              
+              <!-- Buttons to accept or reject report -->
+              <button id="acceptReport" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-md">Accept Report</button>
+              <button id="rejectReport" class="mt-4 bg-red-500 text-white py-2 px-4 rounded-md">Reject Report</button>
+            </div>
+          
+          </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Send an asynchronous request to fetch number plate data
+      let eventid = {{ crime_event.id }};
+      fetch(`/streetvigil/fetch_number_plate_data/${eventid}/`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update the result container with the fetched data
+          const capitalizedPlate = data.plate ? data.plate.toUpperCase() : 'Not available';
+          document.getElementById('numberPlateResult').innerText = `Number on Plate: ${capitalizedPlate}`;
+          document.getElementById('vehicleTypeResult').innerText = `Vehicle Type: ${data.vehicle_type || 'Not available'}`;
+
+          // Show additional information section
+          document.getElementById('additionalInfoSection').classList.remove('hidden');
+
+          // Update additional information
+          document.getElementById('crimeDescription').innerText = data.crime_description || 'Not available';
+          document.getElementById('fineAmount').innerText = data.fine_amount || 'Not available';
+
+          // Prefill the fine input field
+          document.getElementById('prefilledFine').value = data.fine_amount || '';
+        })
+        .catch(error => {
+          console.error('Error fetching number plate data:', error);
+          // Update the result container with an error message in red
+          document.getElementById('numberPlateResult').innerText = 'Error fetching number plate data';
+          document.getElementById('numberPlateResult').style.color = 'red';
+          document.getElementById('vehicleTypeResult').innerText = '';
+        });
+    });
+  </script>
 {% endblock %}
