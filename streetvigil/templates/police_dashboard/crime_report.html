@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8">
+    <h2 class="text-3xl font-semibold mb-6">Complete Crime Report</h2>
+
+    <div class="flex bg-white p-6 rounded-md shadow-md">
+      <!-- Image on the left with a larger height and width -->
+      <img src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md w-48 mr-4">
+
+      <!-- Other data on the right with 60% width -->
+      <div class="w-60">
+        <!-- Include Folium map HTML at the top -->
+        <div id="crime-map" style="height: 300px; width: 100%;">{{ crime_map_html|safe }}</div>
+
+        <!-- Details below the map -->
+        <div class="mt-4">
+          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.get_category_display }}</p>
+          <p class="text-gray-700">{{ crime_event.description }}</p>
+          <div class="mt-4">
+            <span class="text-sm text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
+            <!-- Add more details as needed -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

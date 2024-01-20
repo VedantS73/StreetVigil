@@ -9,6 +9,7 @@ from folium import plugins
 from django.db.models import Q
 from .forms import CapturedImageForm
 from .models import *
+from .models import CapturedImage
 import json
 
 def index(request):
@@ -79,24 +80,34 @@ def register(request):
     else:
         return render(request, "register.html")
 
-def capture_image(request):
-    if request.method == 'POST':
-        form = CapturedImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save()
-            return JsonResponse({'message': 'Image saved successfully', 'image_url': instance.image.url})
-        else:
-            return JsonResponse({'error': 'Form errors', 'errors': form.errors})
-    else:
-        form = CapturedImageForm()
+# def capture_image(request):
+#     if request.method == 'POST':
+#         form = CapturedImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save()
+#             return JsonResponse({'message': 'Image saved successfully', 'image_url': instance.image.url})
+#         else:
+#             return JsonResponse({'error': 'Form errors', 'errors': form.errors})
+#     else:
+#         form = CapturedImageForm()
 
-    return render(request, 'capture_image.html', {'form': form})
+#     return render(request, 'capture_image.html', {'form': form})
 
 def capture(request):
     if request.method == 'POST':
         form = CapturedImageForm(request.POST, request.FILES)
         if form.is_valid():
-            instance = form.save()
+            instance = form.save(commit=False)
+            category = request.POST['category']
+            lat =  request.POST['latitude']
+            lon = request.POST['longitude']
+
+            instance.category = category
+            instance.latitude = lat 
+            instance.longitude = lon
+            print(category , lat , lon)
+            instance.save()
+
             return JsonResponse({'message': 'Image saved successfully', 'image_url': instance.image.url})
         else:
             return JsonResponse({'error': 'Form errors', 'errors': form.errors})
@@ -104,6 +115,49 @@ def capture(request):
         form = CapturedImageForm()
 
     return render(request, 'capture.html', {'form': form})
+
+
+
+
+
+# def capture(request):
+#     if request.method == 'POST':
+#         # Handle the image file separately from the form
+#         image_form = CapturedImageForm(request.POST, request.FILES)
+        
+#         # Check if the image form is valid
+#         if image_form.is_valid():
+#             # Save the image form to get the instance
+#             image_instance = image_form.save(commit=False)
+
+#             # Now handle the additional fields
+#             category = request.POST.get('category')
+#             description = request.POST.get('description')
+#             reported_by = request.POST.get('reported_by')
+#             location = request.POST.get('location')
+
+#             # Assign the additional fields to the image instance
+#             image_instance.category = category
+#             image_instance.description = description
+#             image_instance.reported_by = reported_by
+#             image_instance.location = location
+
+#             # Save the image instance with the additional fields
+#             image_instance.save()
+
+#             # Return a JsonResponse with success message and image URL
+#             return JsonResponse({'message': 'Image and data saved successfully', 'image_url': image_instance.image.url})
+#         else:
+#             # Return a JsonResponse with form errors if the image form is not valid
+#             return JsonResponse({'error': 'Form errors', 'errors': image_form.errors})
+#     else:
+#         # Create a new instance of the image form for rendering the initial form
+#         image_form = CapturedImageForm()
+
+#     # Render the form in case of a GET request or form validation errors
+#     return render(request, 'capture.html', {'image_form': image_form})
+
+
 
 def upload(request):
     if request.method == 'POST':
@@ -183,14 +237,32 @@ def report_interface(request):
 
 
 def police(request):
-    # Fetch crime data that is not verified
     crime_data_objects = CapturedImage.objects.filter(verified=False)
 
     context = {
         'crime_data_objects': crime_data_objects,
     }
-
     return render(request, 'police_dashboard/policed.html', context)
+
+def crime_report(request, crime_id):
+    crime_event = get_object_or_404(CapturedImage, id=crime_id)
+
+    # Create Folium map and add marker for crime location
+    crime_map = folium.Map(location=[crime_event.latitude, crime_event.longitude], zoom_start=13)
+    folium.Marker([crime_event.latitude, crime_event.longitude],
+                  popup=f"Category: {crime_event.category}, Description: {crime_event.description}",
+                  icon=folium.Icon(color='red', icon='circle', prefix='fa')).add_to(crime_map)
+
+    # Save the map as an HTML string
+    crime_map_html = crime_map._repr_html_()
+
+    context = {
+        'crime_event': crime_event,
+        'crime_map_html': crime_map_html,  # Pass the map as HTML string
+    }
+
+    return render(request, 'police_dashboard/crime_report.html', context)
+
 # def police(request):
 #     latitude = 17.60004477572919
 #     longitude = 78.41767026216672

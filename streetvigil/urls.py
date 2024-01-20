@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Police View
     path('police', police, name='police'),
+    path('crime_report/<int:crime_id>/', crime_report, name='crime_report'),
 ]
 
 if settings.DEBUG:
