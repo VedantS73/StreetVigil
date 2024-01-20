@@ -2,28 +2,37 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="  h-screen mx-auto my-8">
-    <h2 class="text-3xl font-semibold mb-6">Complete Crime Report</h2>
+  <div class="h-screen mx-auto">
+    <h2 class="text-3xl font-semibold my-6">Complete Crime Report</h2>
 
-    <div class="flex flex-auto  max-md:flex-col bg-white p-6 rounded-md shadow-md">
+    <div class="flex w-full flex-row bg-white p-3 rounded-md shadow-md">
       <!-- Image on the left with a larger height and width -->
-      <div class="w-1/2">
-      <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto">
-    </div>
-      <!-- Other data on the right with 60% width -->
-      <div class=" pl-4 ml-4 -translate-x-5 " style="" >
-        <!-- Include Folium map HTML at the top -->
-        <div class="w-3/5" id="crime-map" >{{ crime_map_html|safe }}</div>
-        
+      <div class="flex w-full flex-row">
+        <div class="w-full flex flex-col gap-10 px-5 py-10">
+          <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto">
+          <!-- Other data on the right with 60% width -->
+          <!-- Include Folium map HTML at the top -->
+          <div class="" id="crime-map">{{ crime_map_html|safe }}</div>
+        </div>
+      </div>
+
+      <div class="w-full sticky">
         <!-- Details below the map -->
+        <form method="post" >
         <div class="mt-4">
-          <div class="flex items-center justify-between w-full"><p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
-          <span class="text-sm flex justify-end text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span></div>
-          <p class="text-gray-700">{{ crime_event.description }}</p>
+          <div class="flex items-center justify-between w-full">
+            <p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
+            <span class="text-sm flex justify-end text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
+          </div>
+
+          <p class="text-gray-700">
+            <span class="text-xl font-semibold mb-2">Description : </span>
+            {{ crime_event.description }}
+          </p>
           <div class="mt-4">
             <!-- Add more details as needed -->
           </div>
-          
+
           <!-- Display the result -->
           <div id="resultContainer" class="mt-4 w-full flex flex-col justify-center">
             <!-- Check if the response status is okay -->
@@ -33,49 +42,98 @@
             <!-- Additional information section (initially hidden) -->
             <div id="additionalInfoSection" class="hidden mt-6">
               <p>The crime committed is "<span id="crimeDescription"></span>" and the fine is Rs <span id="fineAmount"></span>.</p>
-              
+
               <!-- HTML table with categories and fines -->
               <table class="mt-4 p-4">
                 <thead>
                   <tr>
                     <th>Category</th>
-                    <th>Fine (Rs)</th>
+                    <th>Fine (INR)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- Add rows for each category and fine -->
                   <tr>
-                    <td>Category 1</td>
+                    <td>Wrong Parking</td>
+                    <td>500</td>
+                  </tr>
+                  <tr>
+                    <td>Rash Driving</td>
                     <td>1000</td>
                   </tr>
                   <tr>
-                    <td>Category 2</td>
-                    <td>2000</td>
+                    <td>Suspicious Activity</td>
+                    <td>800</td>
+                  </tr>
+                  <tr>
+                    <td>Damage to Public Property</td>
+                    <td>1200</td>
+                  </tr>
+                  <tr>
+                    <td>Trafficking</td>
+                    <td>1500</td>
+                  </tr>
+                  <tr>
+                    <td>Wrong Side Driving</td>
+                    <td>900</td>
+                  </tr>
+                  <tr>
+                    <td>Other</td>
+                    <td>700</td>
                   </tr>
                   <!-- Add more rows as needed -->
                 </tbody>
               </table>
 
               <!-- Number input fields for fine -->
-             <div> <input type="number" id="prefilledFine" class="mt-4" readonly>
-              
+              <div>
+                <label for="crimeCategory" class="mt-4">Select Crime Category:</label>
+                <select id="crimeCategory" class="mt-2 border-[1px] active:bg-blue-200 p-1 rounded-lg border-gray-900" onchange="findFineAmount(this.value)">
+                  <option value="Wrong Parking">Wrong Parking</option>
+                  <option value="Rash Driving">Rash Driving</option>
+                  <option value="Suspicious Activity">Suspicious Activity</option>
+                  <option value="Damage to Public Property">Damage to Public Property</option>
+                  <option value="Trafficking">Trafficking</option>
+                  <option value="Wrong Side Driving">Wrong Side Driving</option>
+                  <option value="Other">Other</option>
+                </select>
+                <input type="number" id="prefilledFine" class="mt-4" readonly>
+              </div>
+
               <!-- Number input fields for user input -->
-              <input type="number" id="userFineInput" class="mt-4" placeholder="Enter Fine Amount">
-              
-              <!-- Buttons to accept or reject report -->
-              <button id="acceptReport" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-md">Accept Report</button>
-              <button id="rejectReport" class="mt-4 bg-red-500 text-white py-2 px-4 rounded-md">Reject Report</button>
+              <label for="fine">Fine :</label>
+              <input type="number" id="userFineInput" class="mt-4 border-[1px] border-gray-700 rounded-lg p-1" placeholder="Enter Fine Amount">
+
+<div class="flex  justify-center items-center text-center">
+              <p class="flex justify-center items-center">Credits to be paid :</p>
+              <div class="flex justify-around items-center w-4/5">
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="5">5 %</button>
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="10">10 %</button>
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="15">15 %</button>
+              </div>
             </div>
+
+            <label for="total credit">Credit (Rs):</label>
+            <input type="number" name="creditRupees" id="creditRupees" class="mt-4 border-[1px] border-gray-700 rounded-lg p-1" placeholder="Amount in rupees">
           
-          </div>
+              <!-- Buttons to accept or reject report -->
+
+              <br/>
+              <button id="acceptReport" type="submit"  class="mt-4 bg-green-500 text-white py-2 px-4 rounded-md">Accept Report</button>
+              <button id="rejectReport"  type="submit" class="mt-4 bg-red-500 text-white py-2 px-4 rounded-md">Reject Report</button>
+            </div>
           </div>
         </div>
+      </form>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+
+
+
+      
       // Send an asynchronous request to fetch number plate data
       let eventid = {{ crime_event.id }};
       fetch(`/streetvigil/fetch_number_plate_data/${eventid}/`)
@@ -108,6 +166,59 @@
           document.getElementById('numberPlateResult').style.color = 'red';
           document.getElementById('vehicleTypeResult').innerText = '';
         });
+
+
+            // Function to calculate credit amount based on percentage and fine
+    function calculateCreditAmount(percentage, fineAmount) {
+      return (fineAmount * percentage) / 100;
+    }
+
+    // Function to handle percentage button click
+    function handlePercentageButtonClick(percentage) {
+      // Get the fine amount from the user input
+      const fineAmount = parseFloat(document.getElementById('userFineInput').value) || 0;
+
+      // Calculate the credit amount based on the selected percentage and fine amount
+      const creditAmount = calculateCreditAmount(percentage, fineAmount);
+
+      // Set the calculated credit amount in the 'Credit (Rs)' input field
+      document.getElementById('creditRupees').value = creditAmount.toFixed(2);
+    }
+
+    // Add event listeners to percentage buttons
+    const percentageButtons = document.querySelectorAll('.percentage-button');
+    percentageButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        // Get the selected percentage from the button's value
+        const selectedPercentage = parseInt(button.value, 10);
+
+        // Handle the percentage button click
+        handlePercentageButtonClick(selectedPercentage);
+      });
     });
+    });
+
+    function findFineAmount(category) {
+      // Define your fine amounts based on categories
+      const fineAmounts = {
+        'Wrong Parking': 500,
+        'Rash Driving': 1000,
+        'Suspicious Activity': 800,
+        'Damage to Public Property': 1200,
+        'Trafficking': 1500,
+        'Wrong Side Driving': 900,
+        'Other': 700,
+        // Add more categories as needed
+      };
+
+      // Get the selected category from the dropdown
+      const selectedCategory = document.getElementById('crimeCategory').value;
+
+      // Return the fine amount for the selected category, or 0 if not found
+      const fineAmount = fineAmounts[selectedCategory] || 0;
+
+      // Set the fine amount in the 'Enter Fine Amount' input field
+      document.getElementById('userFineInput').value = fineAmount;
+    }
   </script>
 {% endblock %}

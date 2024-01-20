@@ -279,3 +279,7 @@ def fetch_number_plate_data(request, crime_id):
     else:
         # Error handling
         return JsonResponse({'error': f'Error: {response.status_code}', 'response_content': response.text})
+
+
+
+  

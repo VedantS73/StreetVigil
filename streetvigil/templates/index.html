@@ -4,21 +4,32 @@
     <!-- Content -->
     <div class="container mx-auto mt-16 p-4">
         {% if user.is_authenticated %}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                <!-- Card - Past Reports -->
-                <div class="bg-white p-4 rounded-md shadow-md">
-                    <h2 class="text-lg font-semibold mb-4">Total Reports</h2>
-                    <h2>Total Reports: {{ total_reports }}</h2>
-                </div>
-
-                <!-- Card - Statistics -->
-                <div class="bg-white p-4 rounded-md shadow-md">
-                    <h2 class="text-lg font-semibold mb-4">Statistics</h2>
-                    <h2>Total Points: {{ total_points }}</h2>
-                </div>
-
+            <!-- Card - Total Points Earned -->
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h2 class="text-lg font-semibold mb-4">Total Points Earned</h2>
+                <h2>{{ total_points }}</h2>
             </div>
+
+            <!-- Card - Total Successful Submissions -->
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h2 class="text-lg font-semibold mb-4">Total Successful Submissions</h2>
+                <h2>{{ total_submissions }}</h2>
+            </div>
+        </div>
+
+        <div class="flex justify-center mt-8">
+            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Approved</button>
+            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Pending</button>
+            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Rejected</button>
+        </div>
+
+        <!-- Display Filtered Reports -->
+        <div id="filteredReports" class="mt-8">
+            <!-- Include your code for displaying filtered reports here -->
+            <!-- You may use JavaScript to fetch and update the reports dynamically -->
+        </div>
         {% else %}
         <div class="flex pt-20 justify-center items-center flex-col gap-5"> 
       <div class="flex flex-col justify-center items-center gap-4">

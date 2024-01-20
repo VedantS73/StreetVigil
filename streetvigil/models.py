@@ -23,6 +23,7 @@ class CapturedImage(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     verified = models.BooleanField(default=False )
+    status = models.CharField(max_length=4, default='P')
     rewards = models.IntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
 
