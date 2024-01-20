@@ -13,10 +13,9 @@ urlpatterns = [
     path('', index, name='index'),
     path('capture', capture, name='capture'),
     path('upload', upload, name='upload'),
-    path('report', report_interface, name='report_interface'),
+    path('report_interface', report_interface, name='report_interface'),  # Unique name
     path('submit_report/', report_submission_view, name='submit_report'),
     path('success_page', success_page, name='success_page'),
-    # path('report-submit/', report, name='report'),
 
     # Police View
     path('police', police, name='police'),

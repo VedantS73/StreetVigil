@@ -11,24 +11,44 @@
 
 	<body class="bg-gray-100 font-serif leading-normal tracking-normal">
 		<!-- Navbar -->
-		<nav class="bg-blue-500 p-4 text-white fixed top-0 w-full z-10">
+		<nav class="bg-[#eee] px-4 py-6  text-white fixed top-0 w-full z-10">
 			<div class="container mx-auto flex justify-between items-center">
 				<!-- Logo or App Name -->
-				<span class="text-xl font-semibold">StreetVigil</span>
+			<div>
+				<span class="text-xl font-semibold font-Inter tracking-wider text-black"><a href="/streetvigil">StreetVigil</a></span>
+			</div>
 		
+			{% if user.is_authenticated %}
+			<div> </div>
+			{% else %}
+				<div class="text-lg font-medium text-black font-Inter tracking-wider pl-20 gap-5 flex justify-center items-center">
+					<div><p>Features </p></div>
+					<div><p>About</p></div>
+					<div><p>Contact</p></div>
+				</div>
+				{% endif %}
 				<!-- User Authentication -->
-				<div class="flex items-center space-x-4">
+				<div class="flex justify-center items-center space-x-4">
 					{% if user.is_authenticated %}
 						<!-- Display username and logout button -->
-						<span class="text-sm">Welcome, {{ user.username }}</span>
-						<form action="{% url 'logout' %}" method="post">
-							{% csrf_token %}
-							<button type="submit" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">Logout</button>
-						</form>
+						<div>
+
+							<span class="text-sm">Welcome, {{ user.username }}</span>
+							<form action="{% url 'logout' %}" method="post">
+								{% csrf_token %}
+								<button type="submit" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md font-Inter">Logout</button>
+							</form>
+						</div>
 					{% else %}
 						<!-- Display login and register buttons -->
-						<a href="{% url 'login' %}" class="text-sm bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md">Login</a>
-						<a href="{% url 'register' %}" class="text-sm bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">Register</a>
+							<div class="flex justify-center items-center gap-3">
+								
+
+								<a href="{% url 'login' %}" class="text-sm text-black hover:border-black hover:border-2 transition-all duration-500 px-6 py-2  rounded-md font-Inter">Sign In
+								</a> <span class="text-black">|</span> 
+								<a href="{% url 'register' %}" class="text-sm ml-3  px-6 py-2  bg-black border border-black text-white rounded-md font-Inter">Sign Up</a>
+							</div>
+						
 					{% endif %}
 				</div>
 			</div>

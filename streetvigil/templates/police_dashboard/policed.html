@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container mx-auto my-8">
+    <h2 class="text-3xl font-semibold mb-6">Crime Events</h2>
+
+    <!-- Crime Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for crime_event in crime_data_objects %}
+        <div class="bg-white p-6 rounded-md shadow-md">
+          <img src="{{ crime_event.image.url }}" alt="Crime Image" class="mb-4 rounded-md">
+          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.get_category_display }}</p>
+          <p class="text-gray-700">{{ crime_event.description }}</p>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-sm text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} <script>
+    function acceptCrime(crimeId) {
+      // Implement your logic for accepting the crime, e.g., send a request to the server
+      console.log('Crime accepted: ' + crimeId);
+    }
+
+    function rejectCrime(crimeId) {
+      // Implement your logic for rejecting the crime, e.g., send a request to the server
+      console.log('Crime rejected: ' + crimeId);
+    }
+  </script> {% endcomment %}
+{% endblock %}

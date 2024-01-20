@@ -6,8 +6,10 @@ from django.urls import reverse
 from django.db import IntegrityError
 import folium
 from folium import plugins
+from django.db.models import Q
 from .forms import CapturedImageForm
 from .models import *
+import json
 
 def index(request):
     context = {}
@@ -179,46 +181,46 @@ def report_interface(request):
     form = CapturedImageForm(instance=instance)
     return render(request, 'report_interface.html', {'form': form})
 
-import folium
-from django.shortcuts import render
-import json
 
 def police(request):
-    latitude = 17.60004477572919
-    longitude = 78.41767026216672
+    # Fetch crime data that is not verified
+    crime_data_objects = CapturedImage.objects.filter(verified=False)
 
-    my_map = folium.Map(location=[latitude, longitude], zoom_start=13)
-
-    # Add a marker for the initial location
-    folium.Marker([latitude, longitude], popup='Your Marker Popup').add_to(my_map)
-
-    crime_data = [
-        {'latitude': 17.592192076250978, 'longitude': 78.408226580168, 'category': 'Theft', 'description': 'Stolen item'},
-        {'latitude': 17.601, 'longitude': 78.42, 'category': 'Accident', 'description': 'Car accident'},
-        # Add more crime data as needed,
-    ]
-
-    # Define icons
-    default_icon = folium.Icon(color='blue')
-    accident_icon = folium.Icon(color='red', icon='car')
-
-    # Iterate over crime data and add markers to the map with different icons
-    for crime_point in crime_data:
-        if crime_point['category'] == 'Accident':
-            icon = accident_icon
-        else:
-            icon = default_icon
-
-        folium.Marker([crime_point['latitude'], crime_point['longitude']], 
-                      popup=f"Category: {crime_point['category']}, Description: {crime_point['description']}",
-                      icon=icon).add_to(my_map)
-
-    # Pass the map and other data to the template
     context = {
-        'map': my_map._repr_html_(),
-        'latitude': latitude,
-        'longitude': longitude,
-        'other_data': 'Your additional data',
+        'crime_data_objects': crime_data_objects,
     }
 
-    return render(request, 'police_dashboard/police.html', context)
+    return render(request, 'police_dashboard/policed.html', context)
+# def police(request):
+#     latitude = 17.60004477572919
+#     longitude = 78.41767026216672
+
+#     my_map = folium.Map(location=[latitude, longitude], zoom_start=13)
+
+#     # Add a marker for the initial location
+#     user_icon = folium.Icon(color='blue', icon='user', prefix='fa')
+#     folium.Marker([latitude, longitude], popup='Your Location', icon=user_icon).add_to(my_map)
+
+#     crime_data_objects = CapturedImage.objects.filter(verified=False)
+
+#     crime_data = [
+#         {'latitude': 17.592192076250978, 'longitude': 78.408226580168, 'category': 'Theft', 'description': 'Stolen item'},
+#         {'latitude': 17.601, 'longitude': 78.42, 'category': 'Accident', 'description': 'Car accident'},
+#         # Add more crime data as needed,
+#     ]
+
+#     # Iterate over crime data and add markers to the map with the correct icon
+#     for crime_point in crime_data_objects:
+#         icon = folium.Icon(color='red', icon='circle', prefix='fa')
+#         folium.Marker([crime_point.latitude, crime_point.longitude], 
+#                     popup=f"Category: {crime_point.get_category_display()}, Description: {crime_point.description}",
+#                     icon=icon).add_to(my_map)
+#     context = {
+#         'map': my_map._repr_html_(),
+#         'latitude': latitude,
+#         'longitude': longitude,
+#         'other_data': 'Your additional data',
+#     }
+
+#     return render(request, 'police_dashboard/police.html', context)
+

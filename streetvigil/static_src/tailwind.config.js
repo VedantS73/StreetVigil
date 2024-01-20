@@ -43,6 +43,8 @@ module.exports = {
     ],
     theme: {
         extend: {},
+        fontFamily: {
+            Inter: ['Inter', 'sans-serif'],  
     },
     plugins: [
         /**
@@ -55,4 +57,5 @@ module.exports = {
         require('@tailwindcss/line-clamp'),
         require('@tailwindcss/aspect-ratio'),
     ],
+}
 }

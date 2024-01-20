@@ -6,19 +6,65 @@
     <div id="map" class="w-full h-screen/2 mb-4" style="height: 50vh; width: 100%; background: grey; overflow: hidden; margin-top: 70px;">{{ map|safe }}</div>
 
     <!-- Details Section (Below 50%) -->
-    <div>
+    <div id="details-section">
       <h2 class="text-2xl font-semibold mb-4">Location Details</h2>
-      <p>Latitude: {{ latitude }}, Longitude: {{ longitude }}</p>
-      <p>Additional Data: {{ other_data }}</p>
+      <p id="latitude">Latitude: {{ latitude }}</p>
+      <p id="longitude">Longitude: {{ longitude }}</p>
+      
+      <!-- List of cards for crime events -->
+      <div id="crime-card-list">
+        <!-- Crime cards will be dynamically updated here -->
+      </div>
     </div>
   </div>
   <script>
     var crimeData = {{ crime_data|safe }};
-    
-    // Iterate over the crimeData and add markers to the map
+    var myMap = L.map('map').setView([{{ latitude }}, {{ longitude }}], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(myMap);
+
+    // Iterate over the crimeData and add markers to the map and cards to the list
     crimeData.forEach(function (crime) {
-        var marker = L.marker([crime.latitude, crime.longitude]).addTo(my_map);
-        marker.bindPopup('Category: ' + crime.category + '<br>Description: ' + crime.description);
+        var marker = L.marker([crime.latitude, crime.longitude]).addTo(myMap);
+        marker.bindPopup('<strong>Category:</strong> ' + crime.category + '<br><strong>Description:</strong> ' + crime.description + '<br><img src="' + crime.image + '" alt="Crime Image" style="max-width: 100%;">');
+
+        marker.on('click', function () {
+          console.log('Marker clicked');
+          // Update details section on marker click
+          document.getElementById('latitude').innerText = 'Latitude: ' + crime.latitude;
+          document.getElementById('longitude').innerText = 'Longitude: ' + crime.longitude;
+
+          // Add crime cards to the list
+          var crimeCardList = document.getElementById('crime-card-list');
+          var crimeCard = document.createElement('div');
+          crimeCard.classList.add('card');
+
+          // Crime card content
+          var crimeCardContent = '<img src="' + crime.image + '" alt="Crime Image" style="max-width: 100%;">';
+          crimeCardContent += '<p><strong>Category:</strong> ' + crime.category + '</p>';
+          crimeCardContent += '<p><strong>Description:</strong> ' + crime.description + '</p>';
+
+          // Accept and Reject buttons
+          crimeCardContent += '<button onclick="acceptCrime(' + crime.id + ')">Accept</button>';
+          crimeCardContent += '<button onclick="rejectCrime(' + crime.id + ')">Reject</button>';
+
+          crimeCard.innerHTML = crimeCardContent;
+          crimeCardList.appendChild(crimeCard);
+        });
     });
-</script>
+
+    // Function to handle accepting a crime
+    function acceptCrime(crimeId) {
+      // Implement your logic for accepting the crime, e.g., send a request to the server
+      console.log('Crime accepted: ' + crimeId);
+    }
+
+    // Function to handle rejecting a crime
+    function rejectCrime(crimeId) {
+      // Implement your logic for rejecting the crime, e.g., send a request to the server
+      console.log('Crime rejected: ' + crimeId);
+    }
+  </script>
 {% endblock %}

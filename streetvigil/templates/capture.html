@@ -11,25 +11,21 @@
     
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <!-- <input type="file" name="image" accept="image/*" /> -->
+        
         <div class=" flex  flex-row justify-center   items-center "> 
-            <button type="button" onclick="clickPhotos()"  style="display: block;">Capture</button>
+            <button type="button" id="captureButton" onclick="clickPhotos()" style="display: block;">Capture</button>
         </div>
         
         <img id="capturedImage" style="display: none;" />
         <!-- <button type="button" onclick="retakePhoto()" style="display: none;">Retake Photo</button> -->
 
-
         <!-- this div should be visible only when a photo is clicked -->
-
-        <div class="flex flex-row justify-center items-center"  >
+        <div class="flex flex-row justify-center items-center" id="photoButtons" style="display: none;">
             <button type="button" onclick="retakePhoto()">Retake</button>
-            <button>Proceed</button>
+            <button class="proceed" type="button"  onclick="hide()">Proceed</button>
         </div>
-        <div class="hiddenDiv"  style="display :  none">
-            
-
-
+        
+        <div class="hiddenDiv"  style="display: none;">
             <div>
                 <select name="category">
                     <option value="">Select a category</option>
@@ -41,21 +37,32 @@
                 </select>
             </div> 
             
+           
+
+            <div>
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" placeholder="Enter description">
+            </div>
+
+            <div>
+                <label for="reported_by">Reported by:</label>
+                <input type="text" id="reported_by" name="reported_by" placeholder="Enter reporter's name">
+            </div>
+
+            <div>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter location">
+            </div>
 
             <button type="button" class="submitbtn" onclick="submitForm()">Submit</button>
-
-    
-            </div>
-       
-
-        
+        </div>
     </form>
-
-    
 
     <script>
         let video;
         let imageDataUrl;
+
+        
 
         function captureImage() {
             if (!video) {
@@ -63,14 +70,12 @@
                     .then((stream) => {
                         video = document.createElement('video');
                         video.srcObject = stream;
-                        // document.body.appendChild(video);
                         document.body.insertBefore(video, document.body.firstChild);  
                         // code for taking the 90% width and  of the screen
                         video.style.width = '100vw';
                         video.style.height = '60vh';
                         video.style.objectFit = 'cover';
                       
-
                         // Optional: Show the video element
                         video.play();
                     })
@@ -82,6 +87,12 @@
 
         function clickPhotos() {
             console.log('Click photos');
+            const captureButton = document.getElementById('captureButton');
+            const photoButtons = document.getElementById('photoButtons');
+
+            // Hide the capture button
+            captureButton.style.display = 'none';
+
             const canvas = document.createElement('canvas');
             canvas.width = video.clientWidth; // Use clientWidth to get the rendered width
             canvas.height = video.clientHeight; // Use clientHeight to get the rendered height
@@ -97,8 +108,13 @@
             capturedImageElement.src = imageDataUrl;
             capturedImageElement.style.display = 'block';
 
-            // Display the "Retake Photo" button
-            document.querySelector('button[onclick="retakePhoto()"]').style.display = 'block';
+            // Display the "Retake Photo" and "Proceed" buttons
+            photoButtons.style.display = 'flex';
+        }
+
+
+        function hide() {
+            document.querySelector('.hiddenDiv').style.display = 'block';
         }
 
         function stopVideo() {
@@ -116,14 +132,20 @@
         }
 
         function retakePhoto() {
+            const captureButton = document.getElementById('captureButton');
+            const photoButtons = document.getElementById('photoButtons');
+
+            // Show the capture button
+            captureButton.style.display = 'block';
+
             // Hide the captured image
             document.getElementById('capturedImage').style.display = 'none';
 
             // Start capturing image again
             captureImage();
 
-            // Hide the "Retake Photo" button
-            document.querySelector('button[onclick="retakePhoto()"]').style.display = 'none';
+            // Hide the "Retake Photo" and "Proceed" buttons
+            photoButtons.style.display = 'none';
         }
 
         function submitForm() {
