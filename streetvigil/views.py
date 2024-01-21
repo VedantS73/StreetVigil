@@ -312,7 +312,7 @@ def crime_report(request, crime_id):
             obj.status = 'R'
             obj.verified =  True
             obj.save()
-        return redirect('streetvigil/')
+        return redirect('index')
         # return render(request , 'index.html') 
     crime_event = get_object_or_404(CapturedImage, id=crime_id)
 
