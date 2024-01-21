@@ -38,19 +38,25 @@ def index(request):
             'rejected': rejected
         }
 
-    # elif request.user.username == 'admin':
-    #     pending = CapturedImage.objects.filter(status='P').count()
-    #     approved = CapturedImage.objects.filter(status='A').count()
-    #     rejected = CapturedImage.objects.filter(status='R').count()
+    elif request.user.username == 'admin':
+        pending = CapturedImage.objects.filter(status='P')
+        approved = CapturedImage.objects.filter(status='A')
+        rejected = CapturedImage.objects.filter(status='R')
 
-    #     context = {
-    #         'total_reports': total_reports,
-    #         'total_points': total_points,
-    #         'user_reports': user_reports,
-    #         'pending': pending,
-    #         'approved': approved,
-    #         'rejected': rejected
-    #     }
+        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
+        total_rewards = total_rewards if total_rewards is not None else 0
+
+        total_submissions = approved.count() + rejected.count()
+
+        context = {
+            'pending_no': pending.count(),
+            'approved_no': approved.count(),
+            'rejected_no': rejected.count(),
+
+            'pending': pending,
+            'approved': approved,
+            'rejected': rejected,
+        }
 
     return render(request, 'index.html', context)
 
