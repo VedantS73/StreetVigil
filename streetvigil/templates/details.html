@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="h-screen mx-auto">
-    <h2 class="text-3xl font-semibold my-6">Complete Crime Report</h2>
+  <div class="max-w-7xl w-full mx-auto">
+    <!-- <h2 class="text-3xl font-semibold my-6">Complete Crime Report</h2> -->
 
     <div class="flex w-full flex-row bg-white p-3 rounded-md shadow-md">
       <!-- Image on the left with a larger height and width -->
       <div class="flex w-full flex-row">
         <div class="w-full flex flex-col gap-10 px-5 py-10">
-          <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto">
+          <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto w-72" >
           <!-- Other data on the right with 60% width -->
           <!-- Include Folium map HTML at the top -->
           <div class="" id="crime-map">{{ crime_map_html|safe }}</div>

@@ -312,7 +312,8 @@ def crime_report(request, crime_id):
             obj.status = 'R'
             obj.verified =  True
             obj.save()
-        return render(request , 'index.html') 
+        return redirect('streetvigil/')
+        # return render(request , 'index.html') 
     crime_event = get_object_or_404(CapturedImage, id=crime_id)
 
     # Create Folium map and add marker for crime location
@@ -403,18 +404,68 @@ def fetch_number_plate_data(request, crime_id):
         # Error handling
         return JsonResponse({'error': f'Error: {response.status_code}', 'response_content': response.text})
 
+# def store(request):
+#     if request.method == "POST": 
+#         print('post request')
+#         avail  = request.POST.get('avail')
+#         user_reports = CapturedImage.objects.filter(reported_by=request.user)
+#         approved = user_reports.filter(status='A')
+
+#         total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
+#         total_rewards = total_rewards -  avail
+#         print(total_rewards)
+#         total_rewards = total_rewards if total_rewards is not None else 0
+#         context = {
+#             'total_rewards': total_rewards,
+#         }
+
+#     elif request.user.is_authenticated:
+#         user_reports = CapturedImage.objects.filter(reported_by=request.user)
+#         approved = user_reports.filter(status='A')
+
+#         total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
+#         total_rewards = total_rewards if total_rewards is not None else 0
+
+#         context = {
+#             'total_rewards': total_rewards,
+#         }
+#     else:
+#         redirect('login')
+#     return render(request, 'store.html',{'total_rewards':total_rewards})
+
 def store(request):
-    if request.user.is_authenticated:
+    if request.method == "POST":
+        print('post request')
+        avail_str = request.POST.get('avail', '0')  # Default to '0' if not provided
+        try:
+            avail = float(avail_str)
+        except ValueError:
+            # Handle the case where 'avail' is not a valid float
+            avail = 0
+
         user_reports = CapturedImage.objects.filter(reported_by=request.user)
         approved = user_reports.filter(status='A')
 
-        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
-        total_rewards = total_rewards if total_rewards is not None else 0
+        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum'] or 0
+        total_rewards -= avail
+        print(total_rewards)
+        total_rewards = max(total_rewards, 0)  # Ensure total_rewards is not negative
+
+        context = {
+            'total_rewards': total_rewards,
+        }
+
+    elif request.user.is_authenticated:
+        user_reports = CapturedImage.objects.filter(reported_by=request.user)
+        approved = user_reports.filter(status='A')
+
+        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum'] or 0
 
         context = {
             'total_rewards': total_rewards,
         }
     else:
-        redirect('login')
-    return render(request, 'store.html',{'total_rewards':total_rewards})
+        return redirect('login')
+
+    return render(request, 'store.html', context)
   

@@ -13,7 +13,7 @@
 
 <body class="bg-gray-100 font-serif leading-normal tracking-normal">
     <!-- Navbar -->
-    <nav class="bg-[#eee] max-w-7xl py-4   text-white  mx-auto top-0 w-full z-10">
+    <nav class="bg-[#eee] py-4 text-white top-0 w-full z-10">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo or App Name -->
             <div>
@@ -21,7 +21,11 @@
             </div>
         
             {% if user.is_authenticated %}
-            <div> </div>
+                <div class="text-lg font-medium text-black font-Inter tracking-wider pl-20 gap-5  justify-center items-center hidden md:flex">
+                    <div><a href="{% url 'index' %}">Dashboard</a></div>
+                    <div><a href="{% url 'store' %}">Rewards</a></div>
+                    <div><a href="{% url 'capture' %}">Capture</a></div>
+                </div>
             {% else %}
                 <div class="text-lg font-medium text-black font-Inter tracking-wider pl-20 gap-5  justify-center items-center hidden md:flex">
                     <div><p>Features </p></div>
@@ -49,10 +53,10 @@
                         <div>
                             <img src="https://img.icons8.com/?size=256&id=120374&format=png" class="w-6 ml-4 md:hidden flex" id="menuToggle" />
                         </div>
-                        <div class="hidden absolute -top-10 bg-white gap-5 w-full flex-col text-center right-10 " id="mobileMenu">
-                            <div><a href="#" class="text-black">Features</a></div>
-                            <div><a href="#" class="text-black">About</a></div>
-                            <div><a href="#" class="text-black">Contact</a></div>
+                            <div class="hidden absolute  bg-white gap-10 py-4  flex-col text-center top-10 w-full " id="mobileMenu">
+                            <div><a href="#" class="text-black text-lg">Features</a></div>
+                            <div><a href="#" class="text-black text-lg">About</a></div>
+                            <div><a href="#" class="text-black text-lg">Contact</a></div>
                         </div>
                     </div>
                     <!-- Container for the links to be toggled -->
@@ -73,9 +77,9 @@
         mobileMenu.style.display = 'block';
         mobileMenu.style.backgroundColor = 'white';
         mobileMenu.style.position = 'absolute';
-        mobileMenu.style.top = '50%';
-        mobileMenu.style.left = '50%';
-        mobileMenu.style.transform = 'translate(-50%, -50%)';
+        // mobileMenu.style.top = '120%';
+        // mobileMenu.style.left = '50%';
+
     }
     </script>
 </body>

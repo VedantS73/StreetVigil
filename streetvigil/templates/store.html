@@ -2,10 +2,43 @@
 {% load static %}
 
 {% block body %}
+<!-- Add these lines to include Bootstrap's JavaScript and CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-rnwmC87l9z+X9cBIEKLOt5JvYU7Xmp8ITkW5F5cUTNVTpV4KT+Apuoz8f+UHMkI3" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-OgVRvuATP1Kis6eOS/l0a9/gt0/D6I1lFkX0s4ABkW1gZ1fXkVU9t5c/J/Q1bhq" crossorigin="anonymous"></script>
+
+
+<!-- modal -->
+<form method="POST">
+  {% csrf_token %}
+<div class="modal fade" id="rewardModal" tabindex="-1" aria-labelledby="rewardModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rewardModalLabel">Total Rs.{{ total_rewards }}</h5>
+        <button type="button" class="btn-close  " data-bs-dismiss="modal"  aria-x`label="Close"></button>
+        
+      </div>
+      <div class="modal-body">
+        <!-- Add content for the reward details here -->
+        <!-- Example: <p>Details about the reward</p> -->
+        <input  type='number'  class="p-3 w-4/5 border-black" name="avail"  placeholder="Reward you want to claim"  max={{total_rewards}}/>
+      </div>
+      <div class="modal-footer">
+        <button type="submit"  class="bg-black text-white px-6 py-2 rounded-md" data-bs-dismiss="modal">Avail</button>
+        <button type="button" class="bg-white text-black border-1 border-black px-6 py-2 rounded-md" data-bs-dismiss="modal">Close</button>
+        <!-- Add additional buttons if needed -->
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
   <div class="mx-auto max-w-6xl px-4">
     <h2 class="text-4xl font-semibold my-6 text-center">Rewards Center</h2>
     <hr class="my-6">
-    
+   
+
     <!-- Total Points Earned Card -->
     <div class="grid grid-cols-1 gap-4">
         <div class="bg-white p-4 rounded-md shadow-md">
@@ -34,7 +67,8 @@
           <p>Get UPI Cashback on GPay/ PayTM/ PhonePe and other UPI Apps.</p>
         </div>
         <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
+          <a href="#" class="btn-black-filled" data-bs-toggle="modal" data-bs-target="#rewardModal">Avail now</a>
+
         </div>
       </article>
 
@@ -50,7 +84,7 @@
           <p>Using Fastag Recharge easily pay tolls and redeem it using points.</p>
         </div>
         <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
+          <a href="#" class="btn-black-filled" data-bs-toggle="modal" data-bs-target="#rewardModal">Avail now</a>
         </div>
       </article>
 
@@ -66,57 +100,11 @@
           <p>Withdraw to your bank account using IMPS/NEFT.</p>
         </div>
         <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
+          <a href="#" class="btn-black-filled" data-bs-toggle="modal" data-bs-target="#rewardModal">Avail now</a>
         </div>
       </article>
 
-      <!-- Card 1 -->
-      <article class="card">
-        <div class="card-header flex items-center justify-between">
-            <div class="flex items-center">
-                <img src="{% static '/images/upi.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
-                <h3>UPI Cashback</h3>
-            </div>
-        </div>        
-        <div class="card-body">
-          <p>Get UPI Cashback on GPay/ PayTM/ PhonePe and other UPI Apps.</p>
-        </div>
-        <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
-        </div>
-      </article>
 
-      <!-- Card 2 -->
-      <article class="card">
-        <div class="card-header flex items-center justify-between">
-            <div class="flex items-center">
-                <img src="{% static '/images/fastag.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
-                <h3>Fastag Recharge</h3>
-            </div>
-        </div>        
-        <div class="card-body">
-          <p>Using Fastag Recharge easily pay tolls and redeem it using points.</p>
-        </div>
-        <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
-        </div>
-      </article>
-
-      <!-- Card 3 -->
-      <article class="card">
-        <div class="card-header flex items-center justify-between">
-            <div class="flex items-center">
-                <img src="{% static '/images/banking.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
-                <h3>Withdraw to Bank</h3>
-            </div>
-        </div>        
-        <div class="card-body">
-          <p>Withdraw to your bank account using IMPS/NEFT.</p>
-        </div>
-        <div class="card-footer">
-          <a href="#" class="btn-black-filled">Avail now</a>
-        </div>
-      </article>
     </div>
   </div>
 {% endblock %}
