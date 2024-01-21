@@ -19,11 +19,32 @@ def index(request):
         total_reports = user_reports.count()
         total_points = request.user.points
 
+        pending = CapturedImage.objects.filter(status='P', reported_by=request.user).count()
+        approved = CapturedImage.objects.filter(status='A', reported_by=request.user).count()
+        rejected = CapturedImage.objects.filter(status='R', reported_by=request.user).count()
+
         context = {
             'total_reports': total_reports,
             'total_points': total_points,
             'user_reports': user_reports,
+            'pending': pending,
+            'approved': approved,
+            'rejected': rejected
         }
+    elif request.user.username == 'admin':
+        pending = CapturedImage.objects.filter(status='P').count()
+        approved = CapturedImage.objects.filter(status='A').count()
+        rejected = CapturedImage.objects.filter(status='R').count()
+
+        context = {
+            'total_reports': total_reports,
+            'total_points': total_points,
+            'user_reports': user_reports,
+            'pending': pending,
+            'approved': approved,
+            'rejected': rejected
+        }
+
     return render(request, 'index.html', context)
 
 def login_view(request):
@@ -209,6 +230,21 @@ def police(request):
     return render(request, 'police_dashboard/policed.html', context)
 
 def crime_report(request, crime_id):
+    if request.method == "POST" :
+        obj =  CapturedImage.objects.get(id =  crime_id)
+        actionType = request.POST.get('action')
+        print('action type is ',actionType)
+        if(actionType == 'accept') :
+            rewards = request.POST.get('creditRupees')
+            obj.rewards = rewards
+            obj.status = 'A'
+            obj.verified = True
+            obj.save()
+        if(actionType == 'reject') :
+            obj.status = 'R'
+            obj.verified =  True
+            obj.save()
+        return render(request , 'index.html') 
     crime_event = get_object_or_404(CapturedImage, id=crime_id)
 
     # Create Folium map and add marker for crime location

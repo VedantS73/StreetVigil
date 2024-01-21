@@ -7,16 +7,17 @@
     <title>Capture Image</title>
 </head>
 
-<body onload="captureImage()">
+<body class="flex justify-center h-screen items-center" onload="captureImage()">
     
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        
-        <div class=" flex  flex-row justify-center   items-center "> 
-            <button type="button" id="captureButton" onclick="clickPhotos()" style="display: block;">Capture</button>
+        <div class="w-screen">
+        <div class="w-full flex justify-center items-center"> 
+        <button type="button" class=" "  id="captureButton" onclick="clickPhotos()" style="display: block; ">Capture</button>
         </div>
         
         <img id="capturedImage" style="display: none;" />
+    </div>
         <!-- <button type="button" onclick="retakePhoto()" style="display: none;">Retake Photo</button> -->
 
         <!-- this div should be visible only when a photo is clicked -->
@@ -78,9 +79,12 @@
                         video.srcObject = stream;
                         document.body.insertBefore(video, document.body.firstChild);  
                         // code for taking the 90% width and  of the screen
-                        video.style.width = '100vw';
-                        video.style.height = '60vh';
-                        video.style.objectFit = 'cover';
+                        video.style.width = '90vw';
+                        video.style.height = '80vh';
+                        video.style.objectFit = 'contain';
+                        video.style.display = 'flex';
+                        video.style.marginBottom = '20px';
+                        
                       
                         // Optional: Show the video element
                         video.play();

@@ -19,6 +19,7 @@
       <div class="w-full sticky">
         <!-- Details below the map -->
         <form method="post" >
+          {% csrf_token %}
         <div class="mt-4">
           <div class="flex items-center justify-between w-full">
             <p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
@@ -106,9 +107,9 @@
 <div class="flex  justify-center items-center text-center">
               <p class="flex justify-center items-center">Credits to be paid :</p>
               <div class="flex justify-around items-center w-4/5">
-                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="5">5 %</button>
-                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="10">10 %</button>
-                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="15">15 %</button>
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="5"  type="button">5 %</button>
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="10" type="button">10 %</button>
+                <button class="percentage-button mt-4 bg-green-500 text-white py-2 px-4 rounded-md" value="15" type="button">15 %</button>
               </div>
             </div>
 
@@ -118,9 +119,10 @@
               <!-- Buttons to accept or reject report -->
 
               <br/>
-              <button id="acceptReport" type="submit"  class="mt-4 bg-green-500 text-white py-2 px-4 rounded-md">Accept Report</button>
-              <button id="rejectReport"  type="submit" class="mt-4 bg-red-500 text-white py-2 px-4 rounded-md">Reject Report</button>
-            </div>
+              <button id="acceptReport" type="submit" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-md" onclick="setAction('accept')">Accept Report</button>
+              <button id="rejectReport" type="submit" class="mt-4 bg-red-500 text-white py-2 px-4 rounded-md" onclick="setAction('reject')">Reject Report</button>
+              <input type="text" name="action" id="actionField"  style="display: none;">           
+             </div>
           </div>
         </div>
       </form>
@@ -131,7 +133,17 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
+      document.getElementById('acceptReport').addEventListener('click', function () {
+        setAction('accept');
+    });
 
+    document.getElementById('rejectReport').addEventListener('click', function () {
+        setAction('reject');
+    });
+
+    function setAction(actionType) {
+        document.getElementById('actionField').value = actionType;
+    }
 
       
       // Send an asynchronous request to fetch number plate data

@@ -2,7 +2,7 @@
 
 {% block body %}
     <!-- Content -->
-    <div class="container mx-auto mt-16 p-4">
+    <div class=" mx-auto mt-16 p-4">
         {% if user.is_authenticated %}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -20,9 +20,9 @@
         </div>
 
         <div class="flex justify-center mt-8">
-            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Approved</button>
-            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Pending</button>
-            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Rejected</button>
+            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Approved  {{approved}} </button>
+            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Pending {{pending}}</button>
+            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Rejected  {{rejected}}</button>
         </div>
 
         <!-- Display Filtered Reports -->
@@ -31,15 +31,23 @@
             <!-- You may use JavaScript to fetch and update the reports dynamically -->
         </div>
         {% else %}
-        <div class="flex pt-20 justify-center items-center flex-col gap-5"> 
+        <div class="flex lg:pt-0 md:pt-8 h-full justify-center items-center flex-col gap-10 "> 
       <div class="flex flex-col justify-center items-center gap-4">
+        <section class=" py-5 bmd:py-10 lg:py-0 flex md:items-center md:h-[70vh] h-3/4 justify-center ">
+            <div class="mx-auto max-w-[43rem]">
+              <div class="text-center">
 
-          <p class="header font-medium text-center font-Inter">Get <span class="font-semibold"> Paid </span> to follow <br/> Traffic Rules !!</p>
+                <h1 class="mt-3 md:text-[3.5rem] text-3xl leading-10 font-bold md:leading-[4rem] tracking-tight text-black">Distribute your brand from&nbsp;design to code</h1>
+                <p class="mt-3 text-lg leading-relaxed text-slate-400">Specify helps you unify your brand identity by collecting, storing and distributing design tokens and assets — automatically.</p>
+              </div>
           
-          <p class="text-center lg:text-lg text-sm font-Inter font-medium">Click photos wherever you see harsh driving on any misbehaviour <br/>send it directly to your nearest RTO office</p>
+              <div class="mt-6 flex items-center justify-center gap-4">
+                <a href={} class="transform rounded-md bg-indigo-600/95 md:px-5 md:py-3 p-2 font-medium text-white transition-colors hover:bg-indigo-700">Get started </a>
+              </div>
+            </div>
+          </section>
         </div>
         <div> 
-         <button class="bg-black px-6 py-3 text-lg text-white font-Inter  rounded-md hover:scale-110    transition-all duration-500 ease-in-out"> Get Started </button>
         </div>
        
         <section class="text-gray-600 body-font max-w-4xl w-full">
