@@ -15,7 +15,7 @@ import numpy as np
 
 def index(request):
     context = {}
-    if request.user.is_authenticated:
+    if request.user.is_authenticated  and request.user.username!= 'admin'  :
         user_reports = CapturedImage.objects.filter(reported_by=request.user)
 
         pending = user_reports.filter(status='P')
@@ -40,6 +40,7 @@ def index(request):
         }
 
     elif request.user.username == 'admin':
+
         pending = CapturedImage.objects.filter(status='P')
         approved = CapturedImage.objects.filter(status='A')
         rejected = CapturedImage.objects.filter(status='R')
