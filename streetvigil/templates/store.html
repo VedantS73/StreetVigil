@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="text-4xl font-semibold my-6 text-center">Rewards Center</h2>
+    <hr class="my-6">
+    
+    <!-- Total Points Earned Card -->
+    <div class="grid grid-cols-1 gap-4">
+        <div class="bg-white p-4 rounded-md shadow-md">
+            <h2 class="text-lg font-semibold mb-4">Total Points Earned</h2>
+            <h2>{{ total_rewards }}</h2>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    
+    <!-- Currently Claimable Rewards Section -->
+    <h1 class="text-2xl font-bold mb-4 text-black">Currently Claimable Rewards</h1>
+
+    <!-- Store Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/upi.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>UPI Cashback</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Get UPI Cashback on GPay/ PayTM/ PhonePe and other UPI Apps.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/fastag.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>Fastag Recharge</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Using Fastag Recharge easily pay tolls and redeem it using points.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/banking.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>Withdraw to Bank</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Withdraw to your bank account using IMPS/NEFT.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/upi.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>UPI Cashback</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Get UPI Cashback on GPay/ PayTM/ PhonePe and other UPI Apps.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/fastag.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>Fastag Recharge</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Using Fastag Recharge easily pay tolls and redeem it using points.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="card-header flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static '/images/banking.jpg' %}" alt="Zeplin Logo" class="mr-4 w-20 h-10">
+                <h3>Withdraw to Bank</h3>
+            </div>
+        </div>        
+        <div class="card-body">
+          <p>Withdraw to your bank account using IMPS/NEFT.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-black-filled">Avail now</a>
+        </div>
+      </article>
+    </div>
+  </div>
+{% endblock %}

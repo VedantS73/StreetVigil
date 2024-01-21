@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="h-screen mx-auto">
+    <h2 class="text-3xl font-semibold my-6">Complete Crime Report</h2>
+
+    <div class="flex w-full flex-row bg-white p-3 rounded-md shadow-md">
+      <!-- Image on the left with a larger height and width -->
+      <div class="flex w-full flex-row">
+        <div class="w-full flex flex-col gap-10 px-5 py-10">
+          <img id="vehicleimg" src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md flex mx-auto">
+          <!-- Other data on the right with 60% width -->
+          <!-- Include Folium map HTML at the top -->
+          <div class="" id="crime-map">{{ crime_map_html|safe }}</div>
+        </div>
+      </div>
+
+      <div class="w-full sticky">
+        <!-- Details below the map -->
+        <form method="post">
+          {% csrf_token %}
+          <div class="mt-4">
+            <div class="flex items-center justify-between w-full">
+              <p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
+              <span class="text-sm flex justify-end text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
+            </div>
+
+            <p class="text-gray-700">
+              <span class="text-xl font-semibold mb-2">Description: </span>
+              {{ crime_event.description }}
+            </p>
+
+            <div class="mt-4 border-t border-gray-300 pt-4">
+              <!-- Additional details from the CapturedImage model -->
+              <p class="text-xl font-semibold mb-2">Latitude: {{ crime_event.latitude }}</p>
+              <p class="text-xl font-semibold mb-2">Longitude: {{ crime_event.longitude }}</p>
+              <p class="text-xl font-semibold mb-2">Verified: {{ crime_event.verified }}</p>
+              <p class="text-xl font-semibold mb-2">Status: 
+                {% if crime_event.status == 'A' %}
+                  <span class="bg-green-500 text-white px-2 py-1 rounded">Approved</span>
+                {% elif crime_event.status == 'R' %}
+                  <span class="bg-red-500 text-white px-2 py-1 rounded">Rejected</span>
+                {% elif crime_event.status == 'P' %}
+                  <span class="bg-yellow-500 text-white px-2 py-1 rounded">Pending</span>
+                {% else %}
+                  <span class="bg-yellow-500 text-white px-2 py-1 rounded">404 Error</span>
+                {% endif %}
+              </p>
+              <p class="text-xl font-semibold mb-2">Rewards Offered: 
+                <div class="
+                  {% if crime_event.rewards > 0 %}
+                    bg-blue-500 text-white px-2 py-1 rounded
+                  {% else %}
+                    bg-gray-300 text-black px-2 py-1 rounded
+                  {% endif %}
+                ">
+                  {{ crime_event.rewards }}
+                </div>
+              </p>
+              <!-- Add more details as needed -->
+            </div>
+
+            <!-- Display the result -->
+            <div id="resultContainer" class="mt-4 w-full flex flex-col justify-center">
+              <!-- Check if the response status is okay -->
+              <p id="numberPlateResult"></p>
+              <p id="vehicleTypeResult"></p>
+
+              <!-- Additional information section (initially hidden) -->
+              <div id="additionalInfoSection" class="hidden mt-6">
+                <p>The crime committed is "<span id="crimeDescription"></span>" and the fine is Rs <span id="fineAmount"></span>.</p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

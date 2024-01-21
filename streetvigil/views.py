@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
+import pytesseract
 from folium import plugins
 from django.db.models import Q, Sum
 from .forms import CapturedImageForm
@@ -233,6 +234,59 @@ def report_interface(request):
     form = CapturedImageForm(instance=instance)
     return render(request, 'report_interface.html', {'form': form})
 
+def detect_and_ocr_license_plate(image_path):
+    # Load the image
+    img = cv2.imread(image_path)
+
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply a blur to reduce noise and improve edge detection
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Apply edge detection using Canny
+    edges = cv2.Canny(blurred, 50, 150)
+
+    save_path = f'plate_roi_before_ocr.jpg'
+    cv2.imwrite(save_path, edges)
+    print(f'Image before OCR saved at: {save_path}')
+
+    # Find contours in the edged image
+    contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Filter contours based on area (adjust the area threshold as needed)
+    min_area_threshold = 500
+    valid_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area_threshold]
+
+    # Iterate over the valid contours
+    for contour in valid_contours:
+        # Approximate the contour as a polygon
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
+
+        # If the polygon has four vertices, it may be a license plate
+        if len(approx) == 4:
+            # Draw a rectangle around the license plate
+            x, y, w, h = cv2.boundingRect(approx)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            # Extract the region of interest (ROI) containing the potential license plate
+            plate_roi = gray[y:y + h, x:x + w]
+
+            # Perform OCR on the potential license plate ROI using Tesseract
+            plate_number = perform_ocr(plate_roi)
+
+            return plate_number
+
+    return None
+
+def perform_ocr(plate_roi):
+    # Perform OCR using Tesseract
+    # custom_config = r'--oem 3 --psm 6 outputbase digits'
+    custom_config = r'--oem 3 --psm 6 outputbase alphanumeric'
+    plate_number = pytesseract.image_to_string(plate_roi, config=custom_config).strip()
+
+    return plate_number
 
 def police(request):
     crime_data_objects = CapturedImage.objects.filter(verified=False)
@@ -275,6 +329,25 @@ def crime_report(request, crime_id):
     }
 
     return render(request, 'police_dashboard/crime_report.html', context)
+
+def details(request, crime_id):
+    crime_event = get_object_or_404(CapturedImage, id=crime_id)
+
+    # Create Folium map and add marker for crime location
+    crime_map = folium.Map(location=[crime_event.latitude, crime_event.longitude], zoom_start=13)
+    folium.Marker([crime_event.latitude, crime_event.longitude],
+                  popup=f"Category: {crime_event.category}, Description: {crime_event.description}",
+                  icon=folium.Icon(color='red', icon='circle', prefix='fa')).add_to(crime_map)
+
+    # Save the map as an HTML string
+    crime_map_html = crime_map._repr_html_()
+
+    context = {
+        'crime_event': crime_event,
+        'crime_map_html': crime_map_html,  # Pass the map as HTML string
+    }
+
+    return render(request, 'details.html', context)
 
 @csrf_exempt
 def fetch_number_plate_data(request, crime_id):
@@ -329,6 +402,18 @@ def fetch_number_plate_data(request, crime_id):
         # Error handling
         return JsonResponse({'error': f'Error: {response.status_code}', 'response_content': response.text})
 
+def store(request):
+    if request.user.is_authenticated:
+        user_reports = CapturedImage.objects.filter(reported_by=request.user)
+        approved = user_reports.filter(status='A')
 
+        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
+        total_rewards = total_rewards if total_rewards is not None else 0
 
+        context = {
+            'total_rewards': total_rewards,
+        }
+    else:
+        redirect('login')
+    return render(request, 'store.html',{'total_rewards':total_rewards})
   
