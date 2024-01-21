@@ -9,7 +9,7 @@
             <!-- Card - Total Points Earned -->
             <div class="bg-white p-4 rounded-md shadow-md">
                 <h2 class="text-lg font-semibold mb-4">Total Points Earned</h2>
-                <h2>{{ total_points }}</h2>
+                <h2>{{ total_rewards }}</h2>
             </div>
 
             <!-- Card - Total Successful Submissions -->
@@ -20,15 +20,21 @@
         </div>
 
         <div class="flex justify-center mt-8">
-            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Approved  {{approved}} </button>
-            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Pending {{pending}}</button>
-            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full">Rejected  {{rejected}}</button>
+            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Approved  ({{approved_no}}) </button>
+            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Pending ({{pending_no}})</button>
+            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Rejected  ({{rejected_no}})</button>
         </div>
 
         <!-- Display Filtered Reports -->
         <div id="filteredReports" class="mt-8">
-            <!-- Include your code for displaying filtered reports here -->
-            <!-- You may use JavaScript to fetch and update the reports dynamically -->
+            {% for report in approved %}
+            <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+            </div>
+            {% endfor %}
         </div>
         {% else %}
         <div class="flex lg:pt-0 md:pt-8 h-full justify-center items-center flex-col gap-10 "> 
@@ -224,5 +230,40 @@
             </a>
         </div>
     </footer>
+    <script>
+        function filterReports(status) {
+            if (status === 'approved') {
+                document.getElementById('filteredReports').innerHTML = 
+                `{% for report in approved %}
+                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                    </div>
+                {% endfor %}`;
+            } else if (status === 'pending') {
+                document.getElementById('filteredReports').innerHTML = 
+                `{% for report in pending %}
+                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                    </div>
+                {% endfor %}`;
+            } else if (status === 'rejected') {
+                document.getElementById('filteredReports').innerHTML = 
+                `{% for report in rejected %}
+                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                    </div>
+                {% endfor %}`;
+            }
+        }
+    </script>
 
 {% endblock %}

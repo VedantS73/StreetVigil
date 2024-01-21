@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from folium import plugins
-from django.db.models import Q
+from django.db.models import Q, Sum
 from .forms import CapturedImageForm
 from .models import *
 from .models import CapturedImage
@@ -16,34 +16,41 @@ def index(request):
     context = {}
     if request.user.is_authenticated:
         user_reports = CapturedImage.objects.filter(reported_by=request.user)
-        total_reports = user_reports.count()
-        total_points = request.user.points
 
-        pending = CapturedImage.objects.filter(status='P', reported_by=request.user).count()
-        approved = CapturedImage.objects.filter(status='A', reported_by=request.user).count()
-        rejected = CapturedImage.objects.filter(status='R', reported_by=request.user).count()
+        pending = user_reports.filter(status='P')
+        approved = user_reports.filter(status='A')
+        rejected = user_reports.filter(status='R')
+
+        total_rewards = approved.aggregate(Sum('rewards'))['rewards__sum']
+        total_rewards = total_rewards if total_rewards is not None else 0
+
+        total_submissions = approved.count() + rejected.count()
 
         context = {
-            'total_reports': total_reports,
-            'total_points': total_points,
-            'user_reports': user_reports,
+            'total_rewards': total_rewards,
+            'total_submissions': total_submissions,
+            'pending_no': pending.count(),
+            'approved_no': approved.count(),
+            'rejected_no': rejected.count(),
+
             'pending': pending,
             'approved': approved,
             'rejected': rejected
         }
-    elif request.user.username == 'admin':
-        pending = CapturedImage.objects.filter(status='P').count()
-        approved = CapturedImage.objects.filter(status='A').count()
-        rejected = CapturedImage.objects.filter(status='R').count()
 
-        context = {
-            'total_reports': total_reports,
-            'total_points': total_points,
-            'user_reports': user_reports,
-            'pending': pending,
-            'approved': approved,
-            'rejected': rejected
-        }
+    # elif request.user.username == 'admin':
+    #     pending = CapturedImage.objects.filter(status='P').count()
+    #     approved = CapturedImage.objects.filter(status='A').count()
+    #     rejected = CapturedImage.objects.filter(status='R').count()
+
+    #     context = {
+    #         'total_reports': total_reports,
+    #         'total_points': total_points,
+    #         'user_reports': user_reports,
+    #         'pending': pending,
+    #         'approved': approved,
+    #         'rejected': rejected
+    #     }
 
     return render(request, 'index.html', context)
 
