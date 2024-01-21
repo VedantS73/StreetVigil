@@ -2,42 +2,98 @@
 
 {% block body %}
     <!-- Content -->
-    <div class=" mx-auto mt-16 p-4">
+    <div class=" mx-auto max-w-7xl px-5 w-full pt-4 pb-0">
         {% if user.is_authenticated %}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div class=""> 
+
+        <p class="py-5 text-5xl">Hello, {{ user.username }}!</p>
+        <div class="grid grid-cols-1  md:grid-cols-2 gap-4">
 
             <!-- Card - Total Points Earned -->
-            <div class="bg-white p-4 rounded-md shadow-md">
-                <h2 class="text-lg font-semibold mb-4">Total Points Earned</h2>
-                <h2>{{ total_rewards }}</h2>
+            <div class="bg-white bg-gradient-to-l from-amber-400  p-4 rounded-md shadow-md flex justify-between w-full items-center">
+               <div>
+                <h2 class="text-lg font-semibold mb-4">Total Credits Earned</h2>
+                <h2 class="text-3xl">{{ total_rewards }}</h2>
+            </div>
+
+            <div>
+            <img src="https://cdn-icons-png.flaticon.com/512/12128/12128059.png" class="w-20 " />
+            </div>
             </div>
 
             <!-- Card - Total Successful Submissions -->
-            <div class="bg-white p-4 rounded-md shadow-md">
-                <h2 class="text-lg font-semibold mb-4">Total Successful Submissions</h2>
-                <h2>{{ total_submissions }}</h2>
+            <div class="bg-white p-4 rounded-md shadow-md bg-gradient-to-l from-green-500 flex justify-between w-full items-center">
+                <div>
+                    <h2 class="text-lg font-semibold mb-4">Total Successful Submissions</h2>
+                    <h2 class="text-3xl">{{ total_submissions }}</h2>
+                </div>
+
+                <div>
+                    <img src="https://cdn-icons-png.flaticon.com/512/6815/6815090.png" class="w-20 " />
+                </div>
             </div>
         </div>
-
-        <div class="flex justify-center mt-8">
-            <button onclick="filterReports('approved')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Approved  ({{approved_no}}) </button>
-            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Pending ({{pending_no}})</button>
-            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md">Rejected  ({{rejected_no}})</button>
         </div>
 
+        <div class="flex justify-center mt-8 ">
+            <button onclick="filterReports('approved')" class="bg-slate-200 py-2 px-6 rounded-md mx-2 w-full shadow-md" id="approvedBtn">Approved ({{approved_no}})</button>
+            <button onclick="filterReports('pending')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md" id="pendingBtn">Pending ({{pending_no}})</button>
+            <button onclick="filterReports('rejected')" class="bg-white py-2 px-6 rounded-md mx-2 w-full shadow-md" id="rejectedBtn">Rejected ({{rejected_no}})</button>
+        </div>
         <!-- Display Filtered Reports -->
-        <div id="filteredReports" class="mt-8">
-            {% for report in approved %}
-            <a href="{% url 'details' crime_id=report.id %}">
-                <div class="bg-white p-4 mb-4 rounded-md shadow-md">
-                    <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
-                    <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
-                    <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
-                    <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+        <div id="filteredReports" class="mt-8 grid  w-full grid-cols-2 sm:grid-cols-2  md:grid-cols-3 gap-4">
+            {% if approved %}
+                {% for report in approved %}
+                <a href="{% url 'details' crime_id=report.id %}" class="flex items-stretch">
+                    <div class="bg-white p-4 mb-4 rounded-md shadow-md flex-grow">
+                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                        <p class="text-gray-500 mb-2">Description: {{ report.description }}</p>
+                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-gray-500">No Items Found</p>
+            {% endif %}
+        </div>
+        
+        {% if user.is_authenticated %}
+            <!-- Upload Block -->
+            <!-- CAMERA CODE BELOW !!! DO NOT TOUCH DANGEROUS !!!-->
+            <a href="{% url 'capture' %}">
+                <div class="flex justify-center items-center">
+                    <button class="bg-slate-200 py-2 px-10 rounded-md flex items-center space-x-4 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
+                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                        </svg>
+                        <span>Capture</span>
+                    </button>
                 </div>
             </a>
-            {% endfor %}
-        </div>
+            <!-- CAMERA CODE ABOVE !!! DO NOT TOUCH DANGEROUS !!!-->
+            <section class="p-8">
+                <div class="border-dashed border-2 border-gray-400 py-12">
+                <form method="post" action="{% url 'upload' %}" enctype="multipart/form-data" class="flex md:gap-0 flex-col">
+                    {% csrf_token %}
+                    <input type="file" name="image" accept="image/*" class="flex justify-center items-center mx-auto" required="" id="id_image">
+
+                    <div class="flex justify-end space-x-3 items-end pr-2">
+                    <button id="submit" name="submit" class="rounded-sm space-x-3 px-3 py-1 md:w-32 bg-black hover:bg-gray-900 text-white focus:shadow-outline focus:outline-none">
+                    Upload now
+                    </button>
+                    <button id="cancel" class="mr-10 rounded-sm px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none">
+                    Cancel
+                    </button>
+                </div>
+                    </form>
+                </div>
+                </section> 
+            <!-- Upload Block Ends-->   
+        {% endif %}
+                   
         {% else %}
         <div class="flex lg:pt-0 md:pt-8 h-full justify-center items-center flex-col gap-10 "> 
       <div class="flex flex-col justify-center items-center gap-4">
@@ -45,8 +101,8 @@
             <div class="mx-auto max-w-[43rem]">
               <div class="text-center">
 
-                <h1 class="mt-3 md:text-[3.5rem] text-3xl leading-10 font-bold md:leading-[4rem] tracking-tight text-black">Distribute your brand from&nbsp;design to code</h1>
-                <p class="mt-3 text-lg leading-relaxed text-slate-400">Specify helps you unify your brand identity by collecting, storing and distributing design tokens and assets — automatically.</p>
+                <h1 class="mt-3 md:text-[5rem] gap-1 text-5xl leading-10 font-semibold md:leading-[4rem] tracking-tight text-black">Get <span class="text-7xl font-bold">Paid</span> to follow <br> traffic rules</h1>
+                <p class="mt-3 text-lg leading-relaxed text-slate-400">Empowering citizens with a seamless platform while optimizing law enforcement processes for a safer, more efficient community response system.</p>
               </div>
           
               <div class="mt-6 flex items-center justify-center gap-4">
@@ -58,154 +114,54 @@
         <div> 
         </div>
        
-        <section class="text-gray-600 body-font max-w-4xl w-full">
-            <div class="container px-5 pb-24 pt-5 mx-auto   w-full">
-            
-              <div class="flex flex-wrap -m-4 text-center w-full">
-                <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                  <div class="  px-4 py-6 rounded-lg">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-black w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                      <path d="M8 17l4 4 4-4m-4-5v9"></path>
-                      <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"></path>
-                    </svg>
-                    <h2 class="font-Inter font-medium text-3xl text-gray-900">2.7K +</h2>
-                    <p class="leading-relaxed font-Inter font-medium">Total Dowload</p>
-                  </div>
-                </div>
-                <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                  <div class=" px-4 py-6 rounded-lg">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-black w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
-                      <circle cx="9" cy="7" r="4"></circle>
-                      <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
-                    </svg>
-                    <h2 class="font-Inter font-medium text-3xl text-gray-900">1.3K +</h2>
-                    <p class="leading-relaxed font-Inter font-medium">Total Users</p>
-                  </div>
-                </div>
-                <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                  <div class=" px-4 py-6 rounded-lg">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-black w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                      <path d="M3 18v-6a9 9 0 0118 0v6"></path>
-                      <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path>
-                    </svg>
-                    <h2 class="font-Inter font-medium text-3xl text-gray-900">50k +</h2>
-                    <p class="leading-relaxed font-Inter">Total Bounties</p>
-                  </div>
-                </div>
-                <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                  <div class=" px-4 py-6 rounded-lg">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-black w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                    <h2 class="font-Inter font-medium text-3xl text-gray-900" >46</h2>
-                    <p class="leading-relaxed font-Inter">Places</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
+        
           <div id="services" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 border px-10 border-gray-400 rounded-md">
             <div class="container xl:max-w-6xl mx-auto px-4">
                 <!-- Heading start -->
                 <header class="text-center mx-auto mb-12 lg:px-20">
                     <h2 class="text-4xl leading-normal mb-2 font-bold text-black">What We Do</h2>
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 60" style="margin: 0 auto;height: 35px;" xml:space="preserve">
-                        <circle cx="50.1" cy="30.4" r="5" class="stroke-primary" style="fill: transparent;stroke-width: 2;stroke-miterlimit: 10;"></circle>
-                        <line x1="55.1" y1="30.4" x2="100" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
-                        <line x1="45.1" y1="30.4" x2="0" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
-                    </svg>
+                    
                     <p class="text-gray-500 leading-relaxed font-light text-xl mx-auto pb-2">Save time managing advertising &amp; Content for your business.</p>
                 </header>
                 <!-- End heading -->
                 <!-- row -->
-                <div class="flex flex-wrap flex-row -mx-4 text-center">
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" style="visibility: visible; animation-duration: 1s; animation-name: fadeInUp;">
+                <div class="grid md:grid-cols-3 grid-cols-1 w-full  text-center">
+                    <div class="flex-shrink px-4 max-w-full w-full lg:px-6 wow fadeInUp" data-wow-duration="1s" style="visibility: visible; animation-duration: 1s; animation-name: fadeInUp;">
                         <!-- service block -->
                         <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
                             <div class="inline-block text-gray-900 mb-4">
                                 <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-                                </svg>
+                              <img width="50" height="50" src="https://img.icons8.com/ios/50/image--v1.png" alt="image--v1"/>
                             </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">SEO Services</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
+                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Quick Image Submission</h3>
+                            <p class="text-gray-500">Citizens can effortlessly upload images of traffic violations, providing crucial visual evidence for quick and effective resolution.</p>
                         </div>
                         <!-- end service block -->
                     </div>
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.1s; animation-name: fadeInUp;">
+                    <div class="flex-shrink px-4 max-w-full w-full  lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.1s; animation-name: fadeInUp;">
                         <!-- service block -->
                         <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
                             <div class="inline-block text-gray-900 mb-4">
                                 <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-chat-square-dots" viewBox="0 0 16 16">
-                                    <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"></path>
-                                    <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
-                                </svg>
+                                <img width="50" height="50" src="https://img.icons8.com/ios/50/policeman-male.png" alt="policeman-male"/>
                             </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Social Content</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
+                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Swift Police Action</h3>
+                            <p class="text-gray-500">Our system enables swift identification and action on violations with efficient processing of uploaded images by officers.</p>
                         </div>
                         <!-- end service block -->
                     </div>
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.3s; animation-name: fadeInUp;">
+                    <div class="flex-shrink px-4 max-w-full w-full  lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.3s; animation-name: fadeInUp;">
                         <!-- service block -->
                         <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
                             <div class="inline-block text-gray-900 mb-4">
                                 <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-badge-ad" viewBox="0 0 16 16">
-                                    <path d="M3.7 11l.47-1.542h2.004L6.644 11h1.261L5.901 5.001H4.513L2.5 11h1.2zm1.503-4.852l.734 2.426H4.416l.734-2.426h.053zm4.759.128c-1.059 0-1.753.765-1.753 2.043v.695c0 1.279.685 2.043 1.74 2.043.677 0 1.222-.33 1.367-.804h.057V11h1.138V4.685h-1.16v2.36h-.053c-.18-.475-.68-.77-1.336-.77zm.387.923c.58 0 1.002.44 1.002 1.138v.602c0 .76-.396 1.2-.984 1.2-.598 0-.972-.449-.972-1.248v-.453c0-.795.37-1.24.954-1.24z"></path>
-                                    <path d="M14 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"></path>
-                                </svg>
+                               <img width="50" height="50" src="https://img.icons8.com/ios/50/police-fine.png" alt="police-fine"/>
                             </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Creative ads</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
+                            <h3 class="text-lg leading-normal mb-2 w-[] font-semibold text-black">Automatic Fine Assessment</h3>
+                            <p class="text-gray-500">App applies precise algorithms, accurately calculates fines for violations, streamlining the processes for efficient handling.</p>
                         </div>
                         <!-- end service block -->
                     </div>
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" style="visibility: visible; animation-duration: 1s; animation-name: fadeInUp;">
-                        <!-- service block -->
-                        <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
-                            <div class="inline-block text-gray-900 mb-4">
-                                <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"></path>
-                                    <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Brand Identity</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
-                        </div>
-                        <!-- end service block -->
-                    </div>
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.1s; animation-name: fadeInUp;">
-                        <!-- service block -->
-                        <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
-                            <div class="inline-block text-gray-900 mb-4">
-                                <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
-                                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484L5.562 3zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Budget &amp; Marketing</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
-                        </div>
-                        <!-- end service block -->
-                    </div>
-                    <div class="flex-shrink px-4 max-w-full w-full sm:w-1/2 lg:w-1/3 lg:px-6 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.3s; animation-name: fadeInUp;">
-                        <!-- service block -->
-                        <div class="py-8 px-12 mb-12 bg-gray-50 border-b border-gray-100 transform transition duration-300 ease-in-out hover:-translate-y-2">
-                            <div class="inline-block text-gray-900 mb-4">
-                                <!-- icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
-                                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg leading-normal mb-2 font-semibold text-black">Optimize conversions</h3>
-                            <p class="text-gray-500">This is a wider card with supporting text below as a natural content.</p>
-                        </div>
                         <!-- end service block -->
                     </div>
                 </div>
@@ -216,60 +172,430 @@
 </div>
           </div>
     </div>
+    <div class="flex justify-center items-center">
+        <!-- component -->
+<div class="">
+    <div class="bg-white p-4 rounded-lg shadow-xl py-12 mt-12">
+        <h4 class="text-4xl font-bold text-gray-800 tracking-widest uppercase text-center">FAQ</h4>
+        <p class="text-center text-gray-600 text-sm mt-2">Here are some of the frequently asked questions about vehicles and parking</p>
+        <div class="space-y-12  px-10 xl:px-16 mt-12" id="faqContainer">
+           <div class="question-set" data-set="1" >
+           <div class="mt-4 flex">
+                <div>
+                    <div class="flex items-center h-16 border-l-4 border-blue-600">
+                        <span class="text-4xl text-blue-600 px-4">Q.</span>
+                    </div>
+                    <div class="flex items-center h-16 border-l-4 border-gray-400">
+                        <span class="text-4xl text-gray-400 px-4">A.</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center h-16">
+                        <span class="text-lg text-blue-600 font-bold">Can I park on any street without restrictions?</span>
+                    </div>
+                    <div class="flex items-center py-2">
+                        <span class="text-gray-500">Parking regulations vary. Always check for street signs and markings to know if parking is allowed. Some areas may have specific restrictions or require a permit.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex">
+                <div>
+                    <div class="flex items-center h-16 border-l-4 border-blue-600">
+                        <span class="text-4xl text-blue-600 px-4">Q.</span>
+                    </div>
+                    <div class="flex items-center h-16 border-l-4 border-gray-400">
+                        <span class="text-4xl text-gray-400 px-4">A.</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center h-16">
+                        <span class="text-lg text-blue-600 font-bold">What is the maximum duration for parking in a metered space?</span>
+                    </div>
+                    <div class="flex items-center py-2">
+                        <span class="text-gray-500">Metered parking spaces usually have time limits, commonly ranging from 30 minutes to a few hours. Exceeding the time limit may result in fines or towing.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pb-10 flex">
+                <div>
+                    <div class="flex items-center h-16 border-l-4 border-blue-600">
+                        <span class="text-4xl text-blue-600 px-4">Q.</span>
+                    </div>
+                    <div class="flex items-center h-16 border-l-4 border-gray-400">
+                        <span class="text-4xl text-gray-400 px-4">A.</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center h-16">
+                        <span class="text-lg text-blue-600 font-bold">Is overnight street parking allowed?</span>
+                    </div>
+                    <div class="flex items-center py-2">
+                        <span class="text-gray-500">In many areas, overnight street parking is regulated. Check local ordinances to determine if you are allowed to park overnight on the street. Some areas may require permits for overnight parking.</span>
+                    </div>
+                </div>
+            </div>
+            </div> 
+
+            <!-- Add more questions and answers as needed -->
+    <div class="question-set hidden" id="hiddenQuestions" data-set="2">
+    <div class="mt-4 pb-10 flex">
+    <!-- Question 1 -->
+    <div>
+        <div class="flex items-center h-16 border-l-4 border-blue-600">
+            <span class="text-4xl text-blue-600 px-4">Q.</span>
+        </div>
+        <div class="flex items-center h-16 border-l-4 border-gray-400">
+            <span class="text-4xl text-gray-400 px-4">A.</span>
+        </div>
+    </div>
+    <div>
+        <div class="flex items-center h-16">
+            <span class="text-lg text-blue-600 font-bold">How do I report a traffic violation?</span>
+        </div>
+        <div class="flex items-center py-2">
+            <span class="text-gray-500">Simply click on the 'Get Started' button, upload the image of the violation, and our system will take care of the rest.</span>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 pb-10 flex">
+    <!-- Question 2 -->
+    <div>
+        <div class="flex items-center h-16 border-l-4 border-blue-600">
+            <span class="text-4xl text-blue-600 px-4">Q.</span>
+        </div>
+        <div class="flex items-center h-16 border-l-4 border-gray-400">
+            <span class="text-4xl text-gray-400 px-4">A.</span>
+        </div>
+    </div>
+    <div>
+        <div class="flex items-center h-16">
+            <span class="text-lg text-blue-600 font-bold">How long does it take for the police to respond?</span>
+        </div>
+        <div class="flex items-center py-2">
+            <span class="text-gray-500">Our system prioritizes swift police action. You can expect a quick response once your violation image is submitted.</span>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 pb-10 flex">
+    <!-- Question 3 -->
+    <div>
+        <div class="flex items-center h-16 border-l-4 border-blue-600">
+            <span class="text-4xl text-blue-600 px-4">Q.</span>
+        </div>
+        <div class="flex items-center h-16 border-l-4 border-gray-400">
+            <span class="text-4xl text-gray-400 px-4">A.</span>
+        </div>
+    </div>
+    <div>
+        <div class="flex items-center h-16">
+            <span class="text-lg text-blue-600 font-bold">How is the fine amount determined?</span>
+        </div>
+        <div class="flex items-center py-2">
+            <span class="text-gray-500">Our application uses advanced algorithms to analyze the violation and calculate fines based on predefined criteria, ensuring fair and accurate assessments.</span>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 pb-10 flex">
+    <!-- Question 4 -->
+    <div>
+        <div class="flex items-center h-16 border-l-4 border-blue-600">
+            <span class="text-4xl text-blue-600 px-4">Q.</span>
+        </div>
+        <div class="flex items-center h-16 border-l-4 border-gray-400">
+            <span class="text-4xl text-gray-400 px-4">A.</span>
+        </div>
+    </div>
+    <div>
+        <div class="flex items-center h-16">
+            <span class="text-lg text-blue-600 font-bold">Is my personal information secure?</span>
+        </div>
+        <div class="flex items-center py-2">
+            <span class="text-gray-500">Yes, we prioritize the security and privacy of your data. Your personal information is handled with the utmost care and is only used for the purpose of resolving traffic violations.</span>
+        </div>
+    </div>
+</div>
+</div>
+    <div class="flex justify-center items-center">
+ <button id="readMoreBtn" class="mt-4 bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
+        Read More
+    </button>
+</div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    <div> 
+        <!-- component -->
+<link rel="stylesheet" href="https://cdn.tailgrids.com/tailgrids-fallback.css" />
+<script>
+    const hiddenQuestions = document.getElementById('hiddenQuestions');
+    const readMoreBtn = document.getElementById('readMoreBtn');
+
+    readMoreBtn.addEventListener('click', () => {
+        // Toggle visibility of hidden questions
+        hiddenQuestions.classList.toggle('hidden');
+
+        // Change button text based on visibility
+        const isHidden = hiddenQuestions.classList.contains('hidden');
+        readMoreBtn.innerText = isHidden ? 'Read More' : 'Read Less';
+    });
+</script>
+<!-- ====== Contact Section Start -->
+<section class="bg-transparent py-20  overflow-hidden relative z-10">
+   <div class="container p-10">
+    <span class="m-4  flex justify-center items-center text-3xl font-bold">
+        Contact Us
+        </span>
+      <div class="flex flex-col mx-auto justify-center items-center p-10">
+         <div class="w-full lg:w-1/2 xl:w-6/12 px-4">
+            <div class="max-w-[570px] mb-12 lg:mb-0">
+              
+               <h2
+                  class="
+                  text-dark
+                  mb-6
+                  text-center
+                  uppercase
+                  font-bold
+                  text-[32px]
+                  sm:text-[40px]
+                  lg:text-[36px]
+                  xl:text-[40px]
+                  "
+                  >
+                  GET IN TOUCH WITH US
+               </h2>
+               <p class="text-base text-body-color leading-relaxed mb-9">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                  eius tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                  adiqua minim veniam quis nostrud exercitation ullamco
+               </p>
+
+            </div>
+         </div>
+         <div class="w-full lg:w-1/2 xl:w-5/12 px-4">
+            <div class="bg-white relative rounded-lg p-8 sm:p-12 shadow-lg">
+               <form>
+                  <div class="mb-6">
+                     <input
+                        type="text"
+                        placeholder="Your Name"
+                        class="
+                        w-full
+                        rounded
+                        py-3
+                        px-4
+                        text-body-color text-base
+                        border border-[f0f0f0]
+                        outline-none
+                        focus-visible:shadow-none
+                        focus:border-primary
+                        "
+                        />
+                  </div>
+                  <div class="mb-6">
+                     <input
+                        type="email"
+                        placeholder="Your Email"
+                        class="
+                        w-full
+                        rounded
+                       py-3
+                        px-4
+                        text-body-color text-base
+                        border border-[f0f0f0]
+                        outline-none
+                        focus-visible:shadow-none
+                        focus:border-primary
+                        "
+                        />
+                  </div>
+                  <div class="mb-6">
+                     <input
+                        type="text"
+                        placeholder="Your Phone"
+                        class="
+                        w-full
+                        rounded
+                       py-3
+                        px-4
+                        text-body-color text-base
+                        border border-[f0f0f0]
+                        outline-none
+                        focus-visible:shadow-none
+                        focus:border-primary
+                        "
+                        />
+                  </div>
+                  <div class="mb-6">
+                     <textarea
+                        rows="6"
+                        placeholder="Your Message"
+                        class="
+                        w-full
+                        rounded
+                        py-3
+                        px-4
+                        text-body-color text-base
+                        border border-[f0f0f0]
+                        resize-none
+                        outline-none
+                        focus-visible:shadow-none
+                        focus:border-primary
+                        "
+                        ></textarea>
+                  </div>
+                  <div>
+                     <button
+                        type="submit"
+                        class="
+                        w-full
+                        text-white
+                        bg-black
+                        rounded
+                        border border-gray-700
+                        p-3
+                        transition
+                        hover:bg-opacity-50
+                        hover:bg-slate-950
+                        "
+                        >
+                     Send Message
+                     </button>
+                  </div>
+               </form>
+               
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+<!-- ====== Contact Section End -->   
+    </div>
         {% endif %}
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-500 p-4 text-white fixed bottom-0 w-full z-10">
-        <div class="container mx-auto flex justify-center">
-            <!-- Upload Button -->
-            <a href="{% url 'upload' %}">
-                <button class="bg-green-500 text-white py-2 px-6 rounded-md mx-2">Upload</button>
-            </a>
-            <!-- Capture Button -->
-            <a href="{% url 'capture' %}">
-                <button class="bg-blue-500 text-white py-2 px-6 rounded-md mx-2">Capture</button>
-            </a>
-        </div>
-    </footer>
+    <style>
+        .active {
+            background-color: #fff !important; /* Darker color for the active button */
+            color: #333 !important; /* Text color for the active button */
+        }
+    </style>
     <script>
         function filterReports(status) {
+            // Remove the 'active' class from all buttons
+            document.getElementById('approvedBtn').classList.remove('bg-slate-200');
+            document.getElementById('pendingBtn').classList.remove('bg-slate-200');
+            document.getElementById('rejectedBtn').classList.remove('bg-slate-200');
+            document.getElementById('approvedBtn').classList.add('bg-white');
+            document.getElementById('pendingBtn').classList.add('bg-white');
+            document.getElementById('rejectedBtn').classList.add('bg-white');
+            // Add the 'active' class to the clicked button
+            document.getElementById(status + 'Btn').classList.remove('bg-white');
+            document.getElementById(status + 'Btn').classList.add('bg-slate-200');
             if (status === 'approved') {
+                document.getElementById('filteredReports').style.backgroundColor='#eee'
                 document.getElementById('filteredReports').innerHTML = 
-                `{% for report in approved %}
+                `
+                {% if approved %}
+                    {% for report in approved %}
+                 
+                    {% if request.user.username == 'admin'   %}
+                    <a href="{% url 'crime_report' crime_id=report.id %}">
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                          
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                {% else  %}
                 <a href="{% url 'details' crime_id=report.id %}">
-                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
-                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
-                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
-                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
-                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                          
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                {% endif  %}
+                   
+                    {% endfor %}
+                {% else %}
+                    <div class="my-8 flex items-center justify-center">
+                        <p class="text-center text-gray-500 bg-transparent">No Items Found</p>
                     </div>
-                </a>
-                {% endfor %}`;
+                {% endif %}`;
             } else if (status === 'pending') {
                 document.getElementById('filteredReports').innerHTML = 
-                `{% for report in pending %}
-                <a href="{% url 'details' crime_id=report.id %}">
-                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
-                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
-                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
-                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
-                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                `
+                {% if pending %}
+                    {% for report in pending %}
+                    {% if request.user.username == 'admin'   %}
+                    <a href="{% url 'crime_report' crime_id=report.id %}">
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'details' crime_id=report.id %}">
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                    {% endif %}
+                                  
+                    {% endfor %}
+                {% else %}
+                    <div class="my-8 flex items-center justify-center">
+                        <p class="text-center text-gray-500 bg-transparent">No Items Found</p>
                     </div>
-                </a>
-                {% endfor %}`;
+                {% endif %}`;
             } else if (status === 'rejected') {
                 document.getElementById('filteredReports').innerHTML = 
-                `{% for report in rejected %}
-                <a href="{% url 'details' crime_id=report.id %}">
-                    <div class="bg-white p-4 mb-4 rounded-md shadow-md">
-                        <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
-                        <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
-                        <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
-                        <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                `
+                {% if rejected %}
+                    {% for report in rejected %}
+                
+                    {% if request.user.username == 'admin'   %}
+                    <a href="{%url 'crime_report' crime_id=report.id %}">
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'details' crime_id=report.id %}">
+                        <div class="bg-white p-4 mb-4 rounded-md shadow-md">
+                            <h2 class="text-lg font-semibold mb-2">Report for {{ report.category }}</h2>
+                            <p class="text-gray-500 mb-2">Description : {{ report.description }}</p>
+                            <p class="text-gray-500 mb-2">Date: {{ report.created_at.date }}</p>
+                            <p class="text-black font-bold">Reward: {{ report.rewards }}</p>
+                        </div>
+                    </a>
+                    {% endif  %}
+                   
+                    {% endfor %}
+                {% else %}
+                    <div class="my-8 flex items-center justify-center">
+                        <p class="text-center text-gray-500 bg-transparent">No Items Found</p>
                     </div>
-                </a>
-                {% endfor %}`;
+                {% endif %}`;
             }
         }
     </script>

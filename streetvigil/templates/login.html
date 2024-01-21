@@ -3,9 +3,52 @@
 {% block body %}
 
     {% if message %}
-        <div>{{ message }}</div>
+    <div
+    class="font-regular absolute items-center  block mx-auto rounded-lg bg-red-500 my-4 w-1/2 p-4 text-base leading-5 text-white opacity-100"
+    data-dismissible="alert"
+    id="alertMessage"
+  >
+    <div class="mr-12">{{message}}</div>
+    <div
+      class="absolute top-2.5 right-3 w-max rounded-lg transition-all hover:bg-white hover:bg-opacity-20"
+      data-dismissible-target="alert"
+    >
+      <button
+        role="button"
+        class="w-max rounded-lg p-1"
+        data-alert-dimissible="true"
+        onclick="hideNotification()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <script>
+    function hideNotification() {
+      document.getElementById('alertMessage').style.display = 'none';
+    }
+    // Hide the alert message after 2000 milliseconds (2 seconds)
+    setTimeout(function() {
+        document.getElementById('alertMessage').style.display = 'none';
+    }, 1500);
+
+</script>
+
     {% endif %}
-    <section class="flex flex-col justify-center md:flex-row h-screen items-center">
+    <section class="flex flex-col justify-center md:flex-row h-screen items-center opacity-100 animate__animated animate__fadeInUp">
 
         <div class="bg-indigo-600 hidden md:block w-full md:w-1/2 h-screen">
             <img src="https://source.unsplash.com/random/?traffic" alt="" class="w-full h-full object-fill">
@@ -17,7 +60,7 @@
           <div class="w-full h-100">
       
       
-            <h1 class="text-xl md:text-2xl font-bold text-center leading-tight mt-12">Log in to your account</h1>
+            <h1 class="text-xl md:text-2xl font-bold text-center leading-tight mt-12">Sign in to your account</h1>
       
             <form class="mt-6" action="{% url 'login' %}" method="POST">
                 {% csrf_token %}
@@ -32,18 +75,17 @@
                       focus:bg-white focus:outline-none" required>
               </div>
       
-              <div class="text-right mt-2">
+              <!-- <div class="text-right mt-2">
                 <a href="#" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot Password?</a>
               </div>
-      
-              <button type="submit" class="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
-                    px-4 py-3 mt-6">Log In</button>
+       -->
+              <button type="submit" class="w-full block bg-black hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
+                    px-4 py-3 mt-6">Sign In</button>
             </form>
       
             <hr class="my-6 border-gray-300 w-full">
       
-            <p class="mt-8">Need an account? <a href="{% url 'register' %}" class="text-blue-500 hover:text-blue-700 font-semibold">Create an
-                    account</a></p>
+            <p class="mt-8">Need an account? <a href="{% url 'register' %}" class="text-blue-500 hover:text-blue-700 font-semibold underline">Sign Up</a></p>
       
       
           </div>

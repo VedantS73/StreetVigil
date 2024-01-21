@@ -1,68 +1,63 @@
-<!-- capture_image.html -->
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html>
+{% block body %}
+<section class="flex flex-col  justify-center md:flex-row h-3/4 items-center">
 
-<head>
-    <title>Capture Image</title>
-</head>
+  <div class=" flex  justify-center items-center  h-full  md:block w-full md:w-1/2   ">
+    <img src="{{ image_url }}" alt="" class="w-full  h-full object-contain">
+    </div>
+    <!-- Report Form -->
+    <form method="POST" class="mb-4 lg:w-1/2 px:0  lg:px-10 mx-auto  w-11/12 ">
+      {% comment %} <form method="POST" action="{% url 'submit_report' %}" class="mb-4 lg:w-1/2 px:0  lg:px-10 mx-auto  w-11/12 "> {% endcomment %}
+      {% csrf_token %}
 
-<body>
-    
-    <form method="post" >
-        {% csrf_token %}
-        <img src="{{ image_url }}" alt="Captured Image">
-        
-        <div class="">
-                <select name="category" >
-                    <option value="Crime">Crime</option>
-                    <option value="Accident">Accident</option>
-                    <option value="Suspicious Activity">Suspicious Activity</option>
-                    <option value="Lost and Found">Lost and Found</option>
-                    <option value="Other">Other</option>
-                </select>
-         
-            
-           
-
-         
-                <label for="description">Description:</label>
-                <input type="text" id="description" name="description" placeholder="Enter description">
-
-                <div class="mb-4">
-                    <label for="id_latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
-                    <input type="text" id="id_latitude" name="latitude" class="form-input block w-full" readonly>
-                  </div>
-            
-                  <!-- Longitude field -->
-                  <div class="mb-4">
-                    <label for="id_longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
-                    <input type="text" id="id_longitude" name="longitude" class="form-input block w-full" readonly>
-                  </div>
-           
-
-           
-              
-          
-
-           
-
-            <!-- <div>
-                <label for="location">Latitude:</label>
-                <input  type="number"  id="location" name="latitude" placeholder="Enter location">
-            </div> -->
-
-            <button  type="button"  onclick="fetchLocation()" > Fetch Live Location</button>
-
-            
-            <button  class="submitbtn" type="submit">Submit</button>
+      <!-- Dropdown for category -->
+      <div class="mb-4 w-full">
+        <label for="id_category" class="block text-sm font-medium text-gray-700">Category</label>
+        <div class="mt-1">
+          <select id="id_category" name="category" class="form-select block ">
+            <option value="Wrong Parking">Wrong Parking</option>
+            <option value="Rash Driving">Rash Driving</option>
+            <option value="Suspicious Activity">Suspicious Activity</option>
+            <option value="Damage to Public Property">Damage to Public Property</option>
+            <option value="Trafficing">Trafficing</option>
+            <option value="Wrong Side Driving">Wrong Side Driving</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
+      </div>
+
+      <!-- Description field -->
+      <div class="mb-4">
+        <label for="id_description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="id_description" name="description" class="form-textarea block w-full" rows="3"></textarea>
+      </div>
+
+      <!-- Latitude field -->
+      <div class="mb-4">
+        <label for="id_latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+        <input type="text" id="id_latitude" name="latitude" class="form-input block w-full" readonly>
+      </div>
+
+      <!-- Longitude field -->
+      <div class="mb-4">
+        <label for="id_longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+        <input type="text" id="id_longitude" name="longitude" class="form-input block w-full" readonly>
+      </div>
+
+      <!-- Fetch Location button -->
+      <div class="flex justify-around items-center w-full ">
+
+        <button type="button" onclick="fetchLocation()" class="bg-black  text-white py-2 px-4 rounded-md">Fetch Location</button>
+        
+        <!-- Submit Report button -->
+        <button type="submit" class=" border-[#000]  border-2  text-black py-2 px-4 rounded-md ">Submit Report</button>
+      </div>
     </form>
+  </div>
+  </section>
 
-
-</body>
-
-<script>
+  <script>
     // Function to fetch user's geolocation
     function fetchLocation() {
       if (navigator.geolocation) {
@@ -81,8 +76,4 @@
       }
     }
   </script>
-
-</html>
-
-
-
+{% endblock %}

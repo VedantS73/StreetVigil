@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block body %}
-<section class="flex flex-col overflow-hidden justify-center md:flex-row h-screen items-center">
+<section class="flex flex-col  justify-center md:flex-row h-screen items-center">
 
   <div class="md:block w-full md:w-1/2  md:h-screen">
-      <img src="{{ form.instance.image.url }}" alt="" class="w-full ">
+      <img src="{{ form.instance.image.url }}" alt="" class="w-full h-full">
     </div>
     <!-- Report Form -->
-    <form method="post" action="{% url 'submit_report' %}" class="mb-4 w-1/2 px-10 mx-auto">
+    <form method="post" action="{% url 'submit_report' %}" class="mb-4 lg:w-1/2 px:0  lg:px-10 mx-auto  w-11/12 ">
       {% csrf_token %}
 
       <!-- Dropdown for category -->

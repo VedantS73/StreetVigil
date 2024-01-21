@@ -1,204 +1,167 @@
-<!-- capture_image.html -->
+{% extends "base.html" %} 
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Capture Image</title>
-</head>
-
+{% block body %}
 <body class="flex justify-center h-screen items-center" onload="captureImage()">
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="w-screen">
+<div class="w-full flex justify-center items-center"> 
+
     
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="w-screen">
-        <div class="w-full flex justify-center items-center"> 
-        <button type="button" class=" "  id="captureButton" onclick="clickPhotos()" style="display: block; ">Capture</button>
-        </div>
-        
-        <img id="capturedImage" style="display: none;" />
-    </div>
-        <!-- <button type="button" onclick="retakePhoto()" style="display: none;">Retake Photo</button> -->
+<button type="button" class="bg-black text-white p-2 "  id="captureButton" onclick="clickPhotos()" style="display: block; ">Capture</button>
+</div>
 
-        <!-- this div should be visible only when a photo is clicked -->
-        <div class="flex flex-row justify-center items-center" id="photoButtons" style="display: none;">
-            <button type="button" onclick="retakePhoto()">Retake</button>
-            <button class="proceed" type="button"  onclick="submitForm()">Proceed</button>
-        </div>
-        
-        <!-- <div class="hiddenDiv"  style="display: none;">
-            <div>
-                <select name="category" >
-                    <option value="Crime">Crime</option>
-                    <option value="Accident">Accident</option>
-                    <option value="Suspicious Activity">Suspicious Activity</option>
-                    <option value="Lost and Found">Lost and Found</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div> 
-            
-           
-
-            <div>
-                <label for="description">Description:</label>
-                <input type="text" id="description" name="description" placeholder="Enter description">
-            </div>
-
-            <div>
-                <label for="reported_by">Reported by:</label>
-                <input type="text" id="reported_by" name="reported_by" placeholder="Enter reporter's name">
-            </div>
-
-           
-
-            <div>
-                <label for="location">Latitude:</label>
-                <input  type="number"  id="location" name="latitude" placeholder="Enter location">
-            </div>
-
-            <div>
-                <label for="location">Longitude:</label>
-                <input type="number"  id="lomgitude" name="longitude" placeholder="Enter location">
-            </div>
-
-            <button type="button" class="submitbtn" onclick="submitForm()">Submit</button>
-        </div> -->
-    </form>
-
-    <script>
-        let video;
-        let imageDataUrl;
-
-        
-        
-        function captureImage() {
-            if (!video) {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                    .then((stream) => {
-                        video = document.createElement('video');
-                        video.srcObject = stream;
-                        document.body.insertBefore(video, document.body.firstChild);  
-                        // code for taking the 90% width and  of the screen
-                        video.style.width = '90vw';
-                        video.style.height = '80vh';
-                        video.style.objectFit = 'contain';
-                        video.style.display = 'flex';
-                        video.style.marginBottom = '20px';
-                        
-                      
-                        // Optional: Show the video element
-                        video.play();
-                    })
-                    .catch((error) => {
-                        console.error('Error accessing camera:', error);
-                    });
-            }
-        }
-
-        function clickPhotos() {
-            console.log('Click photos');
-            const captureButton = document.getElementById('captureButton');
-            const photoButtons = document.getElementById('photoButtons');
-
-            // Hide the capture button
-            captureButton.style.display = 'none';
-
-            const canvas = document.createElement('canvas');
-            canvas.width = video.clientWidth; // Use clientWidth to get the rendered width
-            canvas.height = video.clientHeight; // Use clientHeight to get the rendered height
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Stop the video stream
-            stopVideo();
-
-            imageDataUrl = canvas.toDataURL('image/png');
-
-            const capturedImageElement = document.getElementById('capturedImage');
-            capturedImageElement.src = imageDataUrl;
-            capturedImageElement.style.display = 'block';
-
-            // Display the "Retake Photo" and "Proceed" buttons
-            photoButtons.style.display = 'flex';
-        }
+<img id="capturedImage" style="display: none;" />
+</div>
 
 
-        function hide() {
-            document.querySelector('.hiddenDiv').style.display = 'block';
-        }
 
-        function stopVideo() {
-            if (video && video.srcObject) {
-                const tracks = video.srcObject.getTracks();
+<!-- <button type="button" onclick="retakePhoto()" style="display: none;">Retake Photo</button> -->
 
-                tracks.forEach(track => {
-                    track.stop();
-                });
+<!-- this div should be visible only when a photo is clicked -->
+<div class="flex flex-row justify-around items-center" id="photoButtons" style="display: none;">
+    <button type="button"  class="bg-blue-400 p-2 rounded" onclick="retakePhoto()">Retake</button>
+    <button class="proceed" type="button"  class="bg-"  onclick="submitForm()">Proceed</button>
+</div>
+</form>
 
-                video.srcObject = null;
-                document.body.removeChild(video);
-                video = null;
-            }
-        }
-
-        function retakePhoto() {
-            const captureButton = document.getElementById('captureButton');
-            const photoButtons = document.getElementById('photoButtons');
-
-            // Show the capture button
-            captureButton.style.display = 'block';
-
-            // Hide the captured image
-            document.getElementById('capturedImage').style.display = 'none';
-
-            // Start capturing image again
-            captureImage();
-
-            // Hide the "Retake Photo" and "Proceed" buttons
-            photoButtons.style.display = 'none';
-        }
-
-        function submitForm() {
-            if (imageDataUrl) {
-                // Create a FormData object and append the CSRF token
-                const formData = new FormData();
-                const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-                formData.append('csrfmiddlewaretoken', csrfToken);
-
-                // Convert the data URL to a Blob and append to FormData
-                const blob = dataURItoBlob(imageDataUrl);
-                formData.append('image', blob, 'captured_image.png');
-
-                // Use the fetch API to send the FormData to the server
-                fetch('/streetvigil/capture', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())  // Assuming your server returns JSON
-                    .then(data => {
-                        console.log('Image saved successfully:', data);
-                        if (data.redirect_url) {
-                            window.location.href = data.redirect_url;  // Redirect to the success page
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error saving image:', error);
-                    });
-            } else {
-                console.error('No image to submit');
-            }
-        }
-
-        function dataURItoBlob(dataURI) {
-            const byteString = atob(dataURI.split(',')[1]);
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            return new Blob([ab], { type: 'image/png' });
-        }
-    </script>
 </body>
 
-</html>
+
+<script>
+let video;
+let imageDataUrl;
+
+
+
+function captureImage() {
+    // const videoContainer = docu/ment.getElementById('videoContainer');
+    if (!video) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then((stream) => {
+                video = document.createElement('video');
+                video.srcObject = stream;
+                document.body.insertBefore(video, document.body.firstChild);  
+                // code for taking the 90% width and  of the screen
+                video.style.width = '90vw';
+                video.style.height = '80vh';
+                video.style.objectFit = 'contain';
+                video.style.display = 'flex';
+                video.style.marginBottom = '20px';
+                
+              
+                // Optional: Show the video element
+                video.play();
+                // videoContainer.appendChild(video);
+            })
+            .catch((error) => {
+                console.error('Error accessing camera:', error);
+            });
+    }
+}
+
+function clickPhotos() {
+    console.log('Click photos');
+    const captureButton = document.getElementById('captureButton');
+    const photoButtons = document.getElementById('photoButtons');
+
+    // Hide the capture button
+    captureButton.style.display = 'none';
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.clientWidth; // Use clientWidth to get the rendered width
+    canvas.height = video.clientHeight; // Use clientHeight to get the rendered height
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Stop the video stream
+    stopVideo();
+
+    imageDataUrl = canvas.toDataURL('image/png');
+
+    const capturedImageElement = document.getElementById('capturedImage');
+    capturedImageElement.src = imageDataUrl;
+    capturedImageElement.style.display = 'block';
+
+    // Display the "Retake Photo" and "Proceed" buttons
+    photoButtons.style.display = 'flex';
+}
+
+
+function hide() {
+    document.querySelector('.hiddenDiv').style.display = 'block';
+}
+
+function stopVideo() {
+    if (video && video.srcObject) {
+        const tracks = video.srcObject.getTracks();
+
+        tracks.forEach(track => {
+            track.stop();
+        });
+
+        video.srcObject = null;
+        document.body.removeChild(video);
+        video = null;
+    }
+}
+
+function retakePhoto() {
+    const captureButton = document.getElementById('captureButton');
+    const photoButtons = document.getElementById('photoButtons');
+
+    // Show the capture button
+    captureButton.style.display = 'block';
+
+    // Hide the captured image
+    document.getElementById('capturedImage').style.display = 'none';
+
+    // Start capturing image again
+    captureImage();
+
+    // Hide the "Retake Photo" and "Proceed" buttons
+    photoButtons.style.display = 'none';
+}
+
+function submitForm() {
+    if (imageDataUrl) {
+        // Create a FormData object and append the CSRF token
+        const formData = new FormData();
+        const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        formData.append('csrfmiddlewaretoken', csrfToken);
+
+        // Convert the data URL to a Blob and append to FormData
+        const blob = dataURItoBlob(imageDataUrl);
+        formData.append('image', blob, 'captured_image.png');
+
+        // Use the fetch API to send the FormData to the server
+        fetch('/streetvigil/capture', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())  // Assuming your server returns JSON
+            .then(data => {
+                console.log('Image saved successfully:', data);
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;  // Redirect to the success page
+                }
+            })
+            .catch(error => {
+                console.error('Error saving image:', error);
+            });
+    } else {
+        console.error('No image to submit');
+    }
+}
+
+function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: 'image/png' });
+}
+</script>
+{% endblock %}

@@ -87,12 +87,10 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-
-        # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirmation = request.POST.get("confirmation")
         if password != confirmation:
             return render(request, "register.html", {
                 "message": "Passwords must match."
@@ -100,11 +98,13 @@ def register(request):
 
         try:
             user = User.objects.create_user(username, email, password)
+            print("data saveing")
             user.save()
         except IntegrityError:
             return render(request, "register.html", {
                 "message": "Username already taken."
             })
+        print("doneee")
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:

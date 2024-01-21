@@ -2,12 +2,41 @@
 
 {% block body %}
 
-
     {% if message %}
-        <div>{{ message }}</div>
+    <div
+    class="font-regular relative block w-full rounded-lg bg-pink-500 p-4 text-base leading-5 text-white opacity-100"
+    data-dismissible="alert"
+  >
+    <div class="mr-12">{{message}}</div>
+    <div
+      class="absolute top-2.5 right-3 w-max rounded-lg transition-all hover:bg-white hover:bg-opacity-20"
+      data-dismissible-target="alert"
+    >
+      <button
+        role="button"
+        class="w-max rounded-lg p-1"
+        data-alert-dimissible="true"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
     {% endif %}
 
-    <section class="flex flex-col justify-center md:flex-row h-screen items-center">
+    <section class="flex flex-col justify-center md:flex-row h-screen items-center opacity-100 animate__animated animate__fadeInUp">
 
         <div class="bg-white w-full md:max-w-md lg:max-w-full  md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
               flex items-center justify-center">
@@ -15,30 +44,30 @@
           <div class="w-full h-100">
       
       
-            <h1 class="text-xl md:text-2xl font-bold leading-tight mt-12">Log in to your account</h1>
+            <h1 class="text-xl md:text-2xl font-bold leading-tight mt-12">Sign in to your account</h1>
       
-            <form class="mt-6" action="{% url 'index' %}" method="POST">
+            <form class="mt-6" action="{% url 'register' %}" method="POST">
                 {% csrf_token %}
                 <div>
                     <label class="block text-gray-700">Username</label>
-                    <input type="text" name="" id="" placeholder="Enter Username" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autofocus autocomplete required>
+                    <input type="text" name="username" id="" placeholder="Enter Username" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autofocus autocomplete required>
                   </div>
 
               <div>
                 <label class="block text-gray-700">Email Address</label>
-                <input type="email" name="" id="" placeholder="Enter Email Address" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autofocus autocomplete required>
+                <input type="email" name="email" id="" placeholder="Enter Email Address" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autofocus autocomplete required>
               </div>
       
               <div class="mt-4">
                 <label class="block text-gray-700">Password</label>
-                <input type="password" name="password" id="password" placeholder="Enter Password" minlength="8" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
+                <input type="password" name="password" id="password" placeholder="Enter Password"  class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
                       focus:bg-white focus:outline-none" required>
                      
               </div>
               <p id="password_error" class="text-red-500"></p>
               <div class="mt-4">
                 <label class="block text-gray-700">Comfirm Password</label>
-                <input type="password" name="confirm_password" id="confirm_password" placeholder="Enter Password" minlength="8" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
+                <input type="password" name="confirmation" id="confirm_password" placeholder="Enter Password"  class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
                       focus:bg-white focus:outline-none" required>
               </div>
       
@@ -48,7 +77,7 @@
       
             <hr class="my-6 border-gray-300 w-full">
       
-            <p class="mt-8">Already have an account? <a href="{% url 'login' %}" class="text-blue-500 hover:text-blue-700 font-semibold">Login here
+            <p class="mt-8">Already have an account? <a href="{% url 'login' %}" class="text-blue-500 hover:text-blue-700 font-semibold">Sign In here
                 </a></p>
       
       

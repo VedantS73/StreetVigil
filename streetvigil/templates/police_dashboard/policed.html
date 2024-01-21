@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <div class="container mx-auto my-8">
-    <h2 class="text-3xl font-semibold mb-6">Crime Events</h2>
+  <div class="grid gap-x-5 gap-y-7 grid-cols-3 mx-auto pt-6 my-8">
+    
 
     <!-- Crime Cards -->
     {% for crime_event in crime_data_objects %}
-    <a href="{% url 'crime_report' crime_event.id %}" class="text-blue-500 hover:underline ml-2">
-      <div class="flex bg-white p-6 rounded-md shadow-md mb-6">
+    <a href="{% url 'crime_report' crime_event.id %}" class="text-blue-500 hover:scale-[1.01] ml-2">
+      <div class="flex flex-col justify-start w-full bg-white p-6 rounded-md shadow-md mb-6">
         <!-- Crime Image on the left with a defined height -->
-        <img src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md h-24 mr-4">
+        <img src="{{ crime_event.image.url }}" alt="Crime Image" class="rounded-md h-44 mr-4">
 
         <!-- Crime Content on the right -->
-        <div>
-          <p class="text-xl font-semibold mb-2">Category: {{ crime_event.category }}</p>
+        <div class="flex flex-col gap-2">
+          <p class="text-2xl py-2 font-semibold">Category: {{ crime_event.category }}</p>
           <p class="text-gray-700">{{ crime_event.description }}</p>
-          <div class="mt-4">
-            <span class="text-sm text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
+          <div class="">
+            <span class="text-sm py-2 text-gray-500">Reported by: {{ crime_event.reported_by.username }}</span>
           </div>
         </div>
       </div>
